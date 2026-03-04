@@ -4,7 +4,7 @@ Reference files:
 - REQUIREMENTS.md
 - TECHNINAL_SPEC_BACKEND.md
 
-[ IN PROGRESS ] Task 1: Project initialization & repository layout
+[ DONE ] Task 1: Project initialization & repository layout
 - Create repository root with README, LICENSE, CODE_OF_CONDUCT, CONTRIBUTING
 - Initialize a Git workspace and branch strategy (main, develop, feature/*)
 - Create `backend/` and `mobile/` top-level directories and initial README files
@@ -16,8 +16,9 @@ Reference files:
 - Formatting/linting: add Biome config for the mobile app (no `any` rule), add rustfmt and clippy setup
 - Add CI pipeline skeleton to run linters, formatters and tests on push/PR
 
-[ TO-DO ] Task 3: Backend workspace scaffolding
+[ IN PROGRESS ] Task 3: Backend workspace scaffolding
 - Create crates: common, db, auth, users, providers, services, bookings, payments, notifications, admin
+  - Created `common` and `auth` crate skeletons; added simple logging & config helpers to `common`.
 - Add `src/bin/server.rs` to wire modules, with feature flags for `worker` binary
 - Implement shared config and logging in `common/` (structured logs, env-based config)
 - Add Diesel setup under `db/` and example migration folder `backend/migrations/` with initial DDL (users, services, appointments)

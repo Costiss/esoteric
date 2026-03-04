@@ -7,3 +7,29 @@
 
 Next actions:
 - Continue scaffolding: add CI skeleton, initial Diesel migration stub, and basic backend crate structure.
+
+2026-03-04 (continued):
+- Marked Task 1 as Done in PLAN.md after confirming repository skeleton exists.
+- Updated AGENTS.md with recent progress and next steps.
+ 
+2026-03-04 (edit):
+- Added `log` and `env_logger` as dependencies to `backend/crates/common/Cargo.toml` to prepare for structured logging early in the workspace.
+
+Reflections:
+- Starting with small, focused common utilities (ULID generator, logging) makes integration in other crates straightforward and reduces churn.
+
+Work performed in this run:
+- Added `log` and `env_logger` to `backend/crates/common/Cargo.toml`.
+- Extended `backend/crates/common/src/lib.rs` with `init_logging` and `Config::from_env`.
+- Added `backend/crates/auth/` crate skeleton with a placeholder lib.
+
+Notes/Next steps:
+- Continue scaffolding other crates: `users`, `services`, `bookings`, etc.
+- Add CI skeleton and Biome/rustfmt/clippy config next run.
+
+Reflections:
+- Scaffolding completed successfully; next focus should be CI configuration and Diesel migrations.
+- Prefer Diesel migration examples that use CHAR(26) ULID primary keys and CITEXT email columns.
+
+Notes:
+- AGENTS.md updated with recent progress and tasks. Keep AGENTS.md in sync with architectural decisions as we scaffold crates.
