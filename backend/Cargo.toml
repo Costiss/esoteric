@@ -2,3 +2,22 @@
 members = [
     "crates/*"
 ]
+
+[package]
+name = "backend"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+axum = "0.7"
+tokio = { version = "1", features = ["full"] }
+common = { path = "crates/common" }
+db = { path = "crates/db" }
+auth = { path = "crates/auth" }
+users = { path = "crates/users" }
+providers = { path = "crates/providers" }
+services = { path = "crates/services" }
+bookings = { path = "crates/bookings" }
+payments = { path = "crates/payments" }
+notifications = { path = "crates/notifications" }
+admin = { path = "crates/admin" }

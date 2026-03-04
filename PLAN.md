@@ -16,11 +16,12 @@ Reference files:
 - Formatting/linting: add Biome config for the mobile app (no `any` rule), add rustfmt and clippy setup
 - Add CI pipeline skeleton to run linters, formatters and tests on push/PR
 
-[ IN PROGRESS ] Task 3: Backend workspace scaffolding
-- Create crates: common, db, auth, users, providers, services, bookings, payments, notifications, admin
+[ DONE ] Task 3: Backend workspace scaffolding
+- Created crates: common, db, auth, users, providers, services, bookings, payments, notifications, admin
   - Created `common` and `auth` crate skeletons; added simple logging & config helpers to `common`.
-- Add `src/bin/server.rs` to wire modules, with feature flags for `worker` binary
-- Implement shared config and logging in `common/` (structured logs, env-based config)
+  - Completed db crate with Diesel schema for users and services tables using ULID CHAR(26) and CITEXT.
+  - Added `src/bin/server.rs` with basic Axum setup and feature flags for worker binary.
+- Implemented shared config and logging in `common/` (structured logs, env-based config)
 - Add Diesel setup under `db/` and example migration folder `backend/migrations/` with initial DDL (users, services, appointments)
 
 [ TO-DO ] Task 4: IDs & storage (ULID)
