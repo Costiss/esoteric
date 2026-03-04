@@ -28,3 +28,27 @@ impl Config {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_ulid_new_length() {
+        let ulid = ulid_new();
+        assert_eq!(ulid.len(), 26);
+    }
+
+    #[test]
+    fn test_ulid_new_unique() {
+        let ulid1 = ulid_new();
+        let ulid2 = ulid_new();
+        assert_ne!(ulid1, ulid2);
+    }
+
+    #[test]
+    fn test_ulid_new_alphanumeric() {
+        let ulid = ulid_new();
+        assert!(ulid.chars().all(|c| c.is_alphanumeric()));
+    }
+}

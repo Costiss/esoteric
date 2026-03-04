@@ -2,7 +2,7 @@ use diesel::prelude::*;
 
 table! {
     users (id) {
-        id -> Text,
+        id -> Char,
         email -> Citext,
         password_hash -> Nullable<Text>,
         role -> Text,
@@ -14,8 +14,8 @@ table! {
 
 table! {
     services (id) {
-        id -> Text,
-        provider_id -> Text,
+        id -> Char,
+        provider_id -> Char,
         title -> Text,
         description -> Nullable<Text>,
         duration_minutes -> Integer,

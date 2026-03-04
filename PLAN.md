@@ -24,7 +24,7 @@ Reference files:
 - Implemented shared config and logging in `common/` (structured logs, env-based config)
 - Add Diesel setup under `db/` and example migration folder `backend/migrations/` with initial DDL (users, services, appointments)
 
-[ TO-DO ] Task 4: IDs & storage (ULID)
+[ DONE ] Task 4: IDs & storage (ULID)
 - Add ULID dependency to `common/` and update models to use `CHAR(26)`/String for IDs
 - Update Diesel schema types and migrations to use `CHAR(26)` primary keys as shown in TECHNINAL_SPEC_BACKEND.md
 - Create helper utilities to generate ULIDs server-side and tests for deterministic formats

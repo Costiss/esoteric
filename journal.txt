@@ -45,3 +45,15 @@ Notes/Next steps:
 - Task 3 marked as Done in PLAN.md.
 - Consider starting Task 4 (IDs & storage ULID) next, as ULID helpers are already in common and schema uses Text for IDs.
 - AGENTS.md updated with recent progress if needed.
+
+2026-03-04 (Task 4 in progress):
+- Updated Diesel schema.rs to use Char for ULID fields (id and provider_id) to match CHAR(26) in migration.
+- Added unit tests for ULID generation in common crate: length, uniqueness, alphanumeric.
+- Verified backend compiles and tests pass.
+
+Reflections:
+- Using Char in schema.rs for PostgreSQL CHAR fields ensures type safety.
+- Tests ensure ULID generation is correct and deterministic in format.
+
+Notes/Next steps:
+- Task 4 nearly complete; mark as Done after final checks.
