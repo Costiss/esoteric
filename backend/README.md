@@ -1,3 +1,8 @@
-Backend workspace for Esotheric
+Backend Rust workspace for Esotheric.
 
-This directory will contain Rust crates and the workspace Cargo.toml.
+Structure:
+- crates/: domain crates (common, db, auth, users, ...)
+- migrations/: Diesel SQL migrations
+- Cargo.toml: workspace definition
+
+Run `cargo build` from `backend/` to compile the workspace.

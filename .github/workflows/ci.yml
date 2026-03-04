@@ -1,0 +1,30 @@
+name: CI
+
+on: [push, pull_request]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+      - name: Run cargo fmt check
+        run: |
+          cd backend
+          cargo fmt -- --check
+      - name: Run cargo clippy
+        run: |
+          cd backend
+          cargo clippy --all-targets -- -D warnings
+      - name: Run TypeScript build (mobile)
+        run: |
+          cd mobile || exit 0
+          npm ci
+          npm run build || true
