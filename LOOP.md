@@ -1,4 +1,5 @@
 @PLAN.md
+@REQUIREMENTS.md
 
 - Check for any "In Progress" tasks
 - If there are some, continue working on them until they are completed
