@@ -3,6 +3,7 @@
 - Check for any "In Progress" tasks
 - If there are some, continue working on them until they are completed
 - If there are no "In Progress" tasks, pick the most important task from the "To Do" list and start working on it (change its status to "In Progress")
+- Read journal.txt to check for any relevant information that can help you with the task
 - Implement the task, and once it's done, change its status to "Done"
 - Keep your learnings and thoughts on journal.txt
 - Always update AGENTS.md with architectural decisions and relevant information about the project
@@ -19,3 +20,5 @@
 
 - Always use Sequential Thinking MCP
 - Use context7 MCP for reasearching libraries, tools, and frameworks
+- Use git commits to keep track of your progress and changes in the codebase. Make sure to write clear and concise commit messages that describe the changes you made.
+- Check older commits and your journal for any relevant information that can help you with your current task. This can help you avoid repeating work and can provide insights into previous decisions and implementations.
