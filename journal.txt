@@ -1,0 +1,9 @@
+2026-03-04: Started project scaffolding.
+- Marked Task 1 as In Progress in PLAN.md.
+- Added repository skeleton files: README.md, LICENSE, CODE_OF_CONDUCT.md, CONTRIBUTING.md.
+- Created `backend/` and `mobile/` directories with READMEs.
+- Added `backend/Cargo.toml` workspace and `backend/crates/.gitkeep`.
+- Created initial `AGENTS.md` with architectural decisions.
+
+Next actions:
+- Continue scaffolding: add CI skeleton, initial Diesel migration stub, and basic backend crate structure.
