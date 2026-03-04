@@ -1,0 +1,74 @@
+# ---- General ----
+.DS_Store
+Thumbs.db
+*.log
+*.swp
+*.swo
+*.tmp
+!node_modules/.keep
+
+# ---- OS and Editor files ----
+.idea/
+.vscode/
+*.code-workspace
+*.sublime*
+*.iml
+*.bak
+
+# ---- Rust (backend/workspace) ----
+target/
+**/target/
+Cargo.lock
+Cargo.toml.orig
+*.rs.bk
+
+# ---- Rust: Dependency caches ----
+/.cargo/
+Cargo.lock
+
+# Diesel
+**/migrations/*.rs.bk
+
+# ---- Node/React Native/Expo ----
+node_modules/
+npm-debug.log*
+yarn-error.log*
+yarn-debug.log*
+.expo/
+.expo-shared/
+dist/
+build/
+web-build/
+*.tgz
+
+# ---- Mobile (Expo, iOS, Android)----
+mobile/ios/
+mobile/android/
+mobile/.expo/
+mobile/.expo-shared/
+mobile/node_modules/
+mobile/web-build/
+mobile/dist/
+
+# Metro (React Native bundler) cache
+*.metro-cache
+
+# ---- Environment & secrets ----
+.env
+.env.*
+.envrc
+*.local
+
+# ---- Misc ----
+*.pid
+*.seed
+
+# ---- Tests ----
+coverage/
+.nyc_output/
+
+# ---- VS Code (Workspace Recommendations) ----
+.vscode/settings.json
+.vscode/tasks.json
+.vscode/launch.json
+.vscode/extensions.json

@@ -30,6 +30,9 @@ Recent edits:
 Recent edits:
 
 - Added basic `common` crate ULID helper and logging dependencies to `backend/crates/common/Cargo.toml`.
+- Completed `db` crate with Diesel schema.rs for users and services tables, using ULID as CHAR(26) and CITEXT for emails.
+- Added `src/bin/server.rs` with Axum for HTTP server setup.
+- Scaffolded remaining backend crates: users, providers, services, bookings, payments, notifications, admin with basic Cargo.toml and lib.rs placeholders.
 
 Next updates will include decisions about the cache layer (valkey vs Redis shim) and CI configuration.
 

@@ -31,5 +31,17 @@ Reflections:
 - Scaffolding completed successfully; next focus should be CI configuration and Diesel migrations.
 - Prefer Diesel migration examples that use CHAR(26) ULID primary keys and CITEXT email columns.
 
-Notes:
-- AGENTS.md updated with recent progress and tasks. Keep AGENTS.md in sync with architectural decisions as we scaffold crates.
+2026-03-04 (Task 3 completion):
+- Completed backend workspace scaffolding by adding db crate with Diesel schema for users and services tables (using ULID CHAR(26) and CITEXT), created src/bin/server.rs with basic Axum setup, and scaffolded all remaining crates (users, providers, services, bookings, payments, notifications, admin) with placeholders.
+- Fixed ulid version to 1.2 in common/Cargo.toml.
+- Ensured backend compiles successfully with cargo check.
+
+Reflections:
+- Scaffolding all crates at once provides a solid foundation for parallel development across modules.
+- Manual Diesel schema creation works well when migrations are already defined; future schemas can be generated with diesel print-schema after DB setup.
+- Basic server binary with Axum allows for early testing and integration.
+
+Notes/Next steps:
+- Task 3 marked as Done in PLAN.md.
+- Consider starting Task 4 (IDs & storage ULID) next, as ULID helpers are already in common and schema uses Text for IDs.
+- AGENTS.md updated with recent progress if needed.
