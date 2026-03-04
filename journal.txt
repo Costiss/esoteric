@@ -55,5 +55,39 @@ Reflections:
 - Using Char in schema.rs for PostgreSQL CHAR fields ensures type safety.
 - Tests ensure ULID generation is correct and deterministic in format.
 
+2026-03-04 (Task 2 in progress):
+- Checked installed tools: Rust (1.92.0), Node.js (24.11.1), npm (11.6.2), PNPM (10.23.0), PostgreSQL client (17.8); missing Yarn, Expo CLI, Diesel CLI.
+- User needs to install missing tools: 
+  - Yarn: npm install -g yarn
+  - Expo CLI: npm install -g @expo/cli
+  - Diesel CLI: cargo install diesel_cli --no-default-features --features postgres
+- Added Biome configuration to mobile/biome.json with strict TypeScript rules, including noExplicitAny error to prohibit 'any' type.
+- Updated CI workflow (.github/workflows/ci.yml) to separate jobs for backend (Rust: fmt check, clippy, tests) and mobile (Node: Biome check), using modern GitHub Actions.
+- Committed changes.
+
+Reflections:
+- CI skeleton now properly set up for both backend and mobile with appropriate tools.
+- Biome config enforces type safety as required.
+- Next steps: User installs missing tools, then initialize Expo app in mobile/ with TypeScript strict mode.
+
 Notes/Next steps:
-- Task 4 nearly complete; mark as Done after final checks.
+- Continue Task 2 by initializing Expo app once tools are installed.
+- Consider adding rustfmt.toml if custom formatting needed, but defaults suffice for now.
+
+2026-03-04 (Task 2 - dev env docs):
+- Expanded root README with development environment prerequisites (Rust, Node,
+  Expo CLI, Diesel CLI), instructions for running Postgres and Valkey via
+  `backend/docker-compose.yml`, and an overview of backend and mobile
+  workflows and CI.
+- Updated `backend/README.md` with concrete commands for starting Docker
+  services, applying Diesel migrations, and running the server, tests, fmt,
+  and clippy.
+- Updated `mobile/README.md` to document current status (Expo app not yet
+  initialized), prerequisites for mobile dev, and how to run Biome locally.
+
+Reflections:
+- Writing focused dev environment docs early reduces friction when returning
+  to the project or onboarding new contributors.
+- Keeping Task 2 open until the Expo app is scaffolded and dev tooling is
+  exercised end-to-end feels appropriate; the current changes mainly clarify
+  how to use what is already in place.

@@ -34,6 +34,21 @@ Recent edits:
 - Added `src/bin/server.rs` with Axum for HTTP server setup.
 - Scaffolded remaining backend crates: users, providers, services, bookings, payments, notifications, admin with basic Cargo.toml and lib.rs placeholders.
 
-Next updates will include decisions about the cache layer (valkey vs Redis shim) and CI configuration.
+Recent edits (2026-03-04):
 
-I'll update this file with more architecture notes and decisions as tasks progress.
+- Introduced `backend/docker-compose.yml` with Postgres and Valkey services for
+  local development, aligning with the valkey-based cache design in
+  `TECHNINAL_SPEC_BACKEND.md`.
+- Added a CI workflow (`.github/workflows/ci.yml`) that runs Rust fmt/clippy/
+  tests for the backend and Biome checks for the mobile app.
+- Added `mobile/biome.json` with strict TypeScript rules (including
+  `noExplicitAny`) to enforce mobile code quality.
+- Expanded developer documentation in `README.md`, `backend/README.md`, and
+  `mobile/README.md` to describe required tools, Docker-based dependencies,
+  and common commands for backend and mobile workflows.
+
+Next updates will include decisions about the cache layer (valkey vs Redis
+shim) and CI configuration.
+
+I'll update this file with more architecture notes and decisions as tasks
+progress.
