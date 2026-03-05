@@ -68,6 +68,8 @@ async fn metrics_endpoint(State(state): State<Arc<AppState>>) -> Json<String> {
 
 #[tokio::main]
 async fn main() {
+    dotenv::dotenv().ok();
+
     init_logging();
 
     info!("Starting Esotheric API server");
@@ -153,10 +155,10 @@ async fn main() {
     let user_router = Router::new()
         .route("/api/v1/users/register", post(user_handlers::register))
         .route("/api/v1/users/login", post(user_handlers::login))
-        .route("/api/v1/users/:user_id", get(user_handlers::get_profile))
-        .route("/api/v1/users/:user_id", put(user_handlers::update_profile))
+        .route("/api/v1/users/{user_id}", get(user_handlers::get_profile))
+        .route("/api/v1/users/{user_id}", put(user_handlers::update_profile))
         .route(
-            "/api/v1/users/:user_id/password",
+            "/api/v1/users/{user_id}/password",
             put(user_handlers::change_password),
         )
         .with_state(user_state.clone());
@@ -168,23 +170,23 @@ async fn main() {
             post(provider_handlers::create_provider),
         )
         .route(
-            "/api/v1/providers/:provider_id",
+            "/api/v1/providers/{provider_id}",
             get(provider_handlers::get_provider),
         )
         .route(
-            "/api/v1/providers/user/:user_id",
+            "/api/v1/providers/user/{user_id}",
             get(provider_handlers::get_provider_by_user),
         )
         .route(
-            "/api/v1/providers/:provider_id",
+            "/api/v1/providers/{provider_id}",
             put(provider_handlers::update_provider),
         )
         .route(
-            "/api/v1/providers/:provider_id/verify",
+            "/api/v1/providers/{provider_id}/verify",
             post(provider_handlers::verify_provider),
         )
         .route(
-            "/api/v1/providers/:provider_id/deactivate",
+            "/api/v1/providers/{provider_id}/deactivate",
             post(provider_handlers::deactivate_provider),
         )
         .with_state(provider_state.clone());
@@ -197,27 +199,27 @@ async fn main() {
         )
         .route("/api/v1/services", post(service_handlers::create_service))
         .route(
-            "/api/v1/services/:service_id",
+            "/api/v1/services/{service_id}",
             get(service_handlers::get_service),
         )
         .route(
-            "/api/v1/services/:service_id",
+            "/api/v1/services/{service_id}",
             put(service_handlers::update_service),
         )
         .route(
-            "/api/v1/services/:service_id",
+            "/api/v1/services/{service_id}",
             delete(service_handlers::delete_service),
         )
         .route(
-            "/api/v1/services/:service_id/publish",
+            "/api/v1/services/{service_id}/publish",
             post(service_handlers::publish_service),
         )
         .route(
-            "/api/v1/services/:service_id/unpublish",
+            "/api/v1/services/{service_id}/unpublish",
             post(service_handlers::unpublish_service),
         )
         .route(
-            "/api/v1/providers/:provider_id/services",
+            "/api/v1/providers/{provider_id}/services",
             get(service_handlers::get_provider_services),
         )
         .with_state(service_state.clone());
@@ -226,39 +228,39 @@ async fn main() {
         .route("/api/v1/bookings", post(booking_handlers::create_booking))
         .route("/api/v1/bookings", get(booking_handlers::list_bookings))
         .route(
-            "/api/v1/bookings/:booking_id",
+            "/api/v1/bookings/{booking_id}",
             get(booking_handlers::get_booking),
         )
         .route(
-            "/api/v1/bookings/:booking_id/confirm",
+            "/api/v1/bookings/{booking_id}/confirm",
             post(booking_handlers::confirm_booking),
         )
         .route(
-            "/api/v1/bookings/:booking_id/start",
+            "/api/v1/bookings/{booking_id}/start",
             post(booking_handlers::start_booking),
         )
         .route(
-            "/api/v1/bookings/:booking_id/complete",
+            "/api/v1/bookings/{booking_id}/complete",
             post(booking_handlers::complete_booking),
         )
         .route(
-            "/api/v1/bookings/:booking_id/cancel",
+            "/api/v1/bookings/{booking_id}/cancel",
             post(booking_handlers::cancel_booking),
         )
         .route(
-            "/api/v1/customers/:customer_id/bookings",
+            "/api/v1/customers/{customer_id}/bookings",
             get(booking_handlers::get_customer_bookings),
         )
         .route(
-            "/api/v1/providers/:provider_id/bookings",
+            "/api/v1/providers/{provider_id}/bookings",
             get(booking_handlers::get_provider_bookings),
         )
         .route(
-            "/api/v1/services/:service_id/bookings",
+            "/api/v1/services/{service_id}/bookings",
             get(booking_handlers::get_service_bookings),
         )
         .route(
-            "/api/v1/providers/:provider_id/availability",
+            "/api/v1/providers/{provider_id}/availability",
             get(booking_handlers::check_availability),
         )
         .with_state(booking_state.clone());
@@ -273,23 +275,23 @@ async fn main() {
             post(payment_handlers::handle_webhook),
         )
         .route(
-            "/api/v1/payments/:payment_id",
+            "/api/v1/payments/{payment_id}",
             get(payment_handlers::get_payment),
         )
         .route(
-            "/api/v1/payments/booking/:booking_id",
+            "/api/v1/payments/booking/{booking_id}",
             get(payment_handlers::get_payment_by_booking),
         )
         .route(
-            "/api/v1/payments/:payment_id/refund",
+            "/api/v1/payments/{payment_id}/refund",
             post(payment_handlers::refund_payment),
         )
         .route(
-            "/api/v1/customers/:customer_id/payments",
+            "/api/v1/customers/{customer_id}/payments",
             get(payment_handlers::get_customer_payments),
         )
         .route(
-            "/api/v1/providers/:provider_id/payments",
+            "/api/v1/providers/{provider_id}/payments",
             get(payment_handlers::get_provider_payments),
         )
         .with_state(payment_state.clone());

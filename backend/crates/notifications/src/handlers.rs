@@ -206,28 +206,28 @@ pub async fn get_support_messages(
 pub fn router() -> Router<Arc<NotificationState>> {
     Router::new()
         .route(
-            "/api/v1/users/:user_id/push-tokens",
+            "/api/v1/users/{user_id}/push-tokens",
             post(register_push_token),
         )
         .route(
-            "/api/v1/users/:user_id/push-tokens/:token",
+            "/api/v1/users/{user_id}/push-tokens/{token}",
             axum::routing::delete(unregister_push_token),
         )
         .route(
-            "/api/v1/users/:user_id/push-tokens",
+            "/api/v1/users/{user_id}/push-tokens",
             get(get_user_push_tokens),
         )
         .route("/api/v1/support/tickets", post(create_support_ticket))
         .route(
-            "/api/v1/support/tickets/:ticket_id",
+            "/api/v1/support/tickets/{ticket_id}",
             get(get_support_ticket),
         )
         .route(
-            "/api/v1/support/tickets/:ticket_id/messages",
+            "/api/v1/support/tickets/{ticket_id}/messages",
             post(add_support_message),
         )
         .route(
-            "/api/v1/support/tickets/:ticket_id/messages",
+            "/api/v1/support/tickets/{ticket_id}/messages",
             get(get_support_messages),
         )
 }

@@ -27,3 +27,4 @@ notifications = { path = "crates/notifications" }
 admin = { path = "crates/admin" }
 diesel = { version = "2.2", features = ["postgres", "r2d2", "chrono"] }
 r2d2 = "0.8"
+dotenv = "0.15"
