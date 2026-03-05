@@ -1,18 +1,31 @@
 use crate::error::UserError;
 use crate::models::{CreateUserRequest, NewUser, UpdateUserRequest, User};
+use argon2::{
+    password_hash::{PasswordHash, PasswordHasher, PasswordVerifier, SaltString},
+    Argon2,
+};
 use common::ulid_new;
 use diesel::prelude::*;
 use diesel::r2d2::{ConnectionManager, Pool, PooledConnection};
+use rand::rngs::OsRng;
 
 pub type DbPool = Pool<ConnectionManager<diesel::pg::PgConnection>>;
 pub type DbConnection = PooledConnection<ConnectionManager<diesel::pg::PgConnection>>;
 
 pub fn hash_password(password: &str) -> Result<String, UserError> {
-    bcrypt::hash(password, 10).map_err(|e| UserError::Hashing(e.to_string()))
+    let salt = SaltString::generate(&mut OsRng);
+    let argon2 = Argon2::default();
+    argon2
+        .hash_password(password.as_bytes(), &salt)
+        .map(|hash| hash.to_string())
+        .map_err(|e| UserError::Hashing(e.to_string()))
 }
 
 pub fn verify_password(password: &str, hash: &str) -> Result<bool, UserError> {
-    bcrypt::verify(password, hash).map_err(|e| UserError::Hashing(e.to_string()))
+    let parsed_hash = PasswordHash::new(hash).map_err(|e| UserError::Hashing(e.to_string()))?;
+    Ok(Argon2::default()
+        .verify_password(password.as_bytes(), &parsed_hash)
+        .is_ok())
 }
 
 pub fn create_user(conn: &mut DbConnection, request: CreateUserRequest) -> Result<User, UserError> {
