@@ -73,7 +73,7 @@ Reference files:
 - Email sending not implemented yet (waiting for email provider decision)
 - Note: Firebase will be used for iOS/Android push notifications
 
-[ TO-DO ] Task 12: Frontend (Expo + React Native + Tamagui)
+[ IN PROGRESS ] Task 12: Frontend (Expo + React Native + Tamagui)
 - Initialize Expo app in `mobile/` with TypeScript strict settings and Biome config (for lint/format)
 - Install Tamagui and a component theming system reflecting esoteric design (colors, gradients, subtle motion)
 - Add screens: Auth (login, signup, PKCE flow), Onboarding, Provider Discovery, Service Details, Booking flow, Profile, Provider Dashboard

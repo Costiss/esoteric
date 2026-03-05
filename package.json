@@ -1,0 +1,7 @@
+{
+  "dependencies": {
+    "@react-native-community/datetimepicker": "^8.6.0",
+    "@tamagui/lucide-icons": "^2.0.0-rc.22",
+    "expo-secure-store": "^55.0.8"
+  }
+}
