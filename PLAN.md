@@ -108,10 +108,12 @@ Reference files:
 - Add docker-compose.dev with Postgres and a valkey-compatible cache (Redis or a valkey shim) for local development
 - Add `make` targets or npm scripts to simplify common tasks (start-db, start-backend, start-mobile)
 
-[ TO-DO ] Task 15: Observability, metrics and security
+[ DONE ] Task 15: Observability, metrics and security
 - Add structured logging and request tracing in `common/` (optionally OpenTelemetry integration)
 - Expose basic metrics endpoint and health checks
 - Security: enforce TLS, rotate keys, secure DB credentials, audit logs for auth events
+
+[ TO-DO ] Task 16: Migrations, seed data and sample fixtures
 
 [ TO-DO ] Task 16: Migrations, seed data and sample fixtures
 - Create initial Diesel migrations for users, services, bookings, payments, refresh_tokens

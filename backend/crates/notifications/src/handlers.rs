@@ -175,7 +175,9 @@ pub async fn get_support_ticket(
     State(_state): State<Arc<NotificationState>>,
     Path(_ticket_id): Path<String>,
 ) -> impl IntoResponse {
-    Json(ApiResponse::<SupportTicketResponse>::error("Not implemented".to_string()))
+    Json(ApiResponse::<SupportTicketResponse>::error(
+        "Not implemented".to_string(),
+    ))
 }
 
 pub async fn add_support_message(
@@ -203,7 +205,10 @@ pub async fn get_support_messages(
 
 pub fn router() -> Router<Arc<NotificationState>> {
     Router::new()
-        .route("/api/v1/users/:user_id/push-tokens", post(register_push_token))
+        .route(
+            "/api/v1/users/:user_id/push-tokens",
+            post(register_push_token),
+        )
         .route(
             "/api/v1/users/:user_id/push-tokens/:token",
             axum::routing::delete(unregister_push_token),

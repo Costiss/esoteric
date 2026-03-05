@@ -16,7 +16,11 @@ pub struct EmailContent {
 
 #[async_trait]
 pub trait EmailProvider: Send + Sync {
-    async fn send_email(&self, to: &EmailRecipient, content: &EmailContent) -> Result<(), EmailError>;
+    async fn send_email(
+        &self,
+        to: &EmailRecipient,
+        content: &EmailContent,
+    ) -> Result<(), EmailError>;
 }
 
 #[derive(Debug, thiserror::Error)]
@@ -33,7 +37,11 @@ pub struct NoOpEmailProvider;
 
 #[async_trait]
 impl EmailProvider for NoOpEmailProvider {
-    async fn send_email(&self, _to: &EmailRecipient, _content: &EmailContent) -> Result<(), EmailError> {
+    async fn send_email(
+        &self,
+        _to: &EmailRecipient,
+        _content: &EmailContent,
+    ) -> Result<(), EmailError> {
         Err(EmailError::NotImplemented(
             "Email sending not configured. Set SMTP configuration to enable.".to_string(),
         ))
@@ -57,7 +65,11 @@ impl EmailService {
         Self { provider }
     }
 
-    pub async fn send_booking_confirmation(&self, email: &str, booking_details: &str) -> Result<(), EmailError> {
+    pub async fn send_booking_confirmation(
+        &self,
+        email: &str,
+        booking_details: &str,
+    ) -> Result<(), EmailError> {
         let recipient = EmailRecipient {
             email: email.to_string(),
             name: None,
@@ -70,20 +82,31 @@ impl EmailService {
         self.provider.send_email(&recipient, &content).await
     }
 
-    pub async fn send_booking_reminder(&self, email: &str, booking_details: &str) -> Result<(), EmailError> {
+    pub async fn send_booking_reminder(
+        &self,
+        email: &str,
+        booking_details: &str,
+    ) -> Result<(), EmailError> {
         let recipient = EmailRecipient {
             email: email.to_string(),
             name: None,
         };
         let content = EmailContent {
             subject: "Booking Reminder - Esotheric".to_string(),
-            body: format!("This is a reminder about your upcoming booking.\n\n{}", booking_details),
+            body: format!(
+                "This is a reminder about your upcoming booking.\n\n{}",
+                booking_details
+            ),
             is_html: false,
         };
         self.provider.send_email(&recipient, &content).await
     }
 
-    pub async fn send_booking_cancelled(&self, email: &str, booking_details: &str) -> Result<(), EmailError> {
+    pub async fn send_booking_cancelled(
+        &self,
+        email: &str,
+        booking_details: &str,
+    ) -> Result<(), EmailError> {
         let recipient = EmailRecipient {
             email: email.to_string(),
             name: None,

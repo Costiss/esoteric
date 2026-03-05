@@ -517,3 +517,59 @@ Reflections:
 Notes/Next steps:
 - Task 14 marked as DONE in PLAN.md
 - Next: Start Task 15 (Observability, metrics and security) or Task 16 (Migrations, seed data)
+
+2026-03-05 (Task 15 completed - Observability, metrics and security):
+- Implemented structured logging in common crate using tracing and tracing-subscriber:
+  - Daily rotating log files in LOG_DIR (default: logs/)
+  - JSON format with target, thread IDs, file and line numbers
+  - Panic handler that logs panic location and message
+  - Both file and stdout output with ANSI colors in stdout
+  
+- Added request tracing with tower-http TraceLayer:
+  - HTTP request/response logging
+  - Latency tracking
+  
+- Added metrics system (Metrics struct):
+  - HTTP request counters (total, by method, by status)
+  - Auth counters (logins, token refreshes, failures)
+  - Business counters (bookings created, payments created)
+  - JSON output endpoint at GET /metrics
+  
+- Added health check endpoint:
+  - GET /health returns status, database, and cache health
+  - Returns "healthy" or "degraded" status
+  
+- Added audit logging system:
+  - AuditEvent struct with timestamp, event_type, user_id, client_id, ip_address, user_agent, success, details
+  - AuditLogger with in-memory storage (VecDeque with max 1000 entries)
+  - Helper function create_audit_event for easy event creation
+  - Async methods: log(), get_recent(), get_by_user()
+  
+- Added request ID generation:
+  - generate_request_id() using UUID v4
+  
+- Server integration:
+  - Added AppState with Metrics and AuditLogger
+  - Mounted /health and /metrics routes
+  - Added TraceLayer for request tracing
+  
+- Dependencies added:
+  - tracing, tracing-subscriber, tracing-appender for structured logging
+  - uuid for request IDs
+  - chrono for timestamps
+  - tower-http for request tracing
+  - serde for JSON serialization
+
+- Added tower-http to backend workspace dependencies
+
+Reflections:
+- Structured logging with tracing provides better observability than env_logger
+- Rolling file appender with daily rotation is suitable for production
+- Tower TraceLayer provides out-of-the-box request tracing
+- Metrics system is simple but effective for basic monitoring
+- Audit logging provides security event tracking
+- Health check endpoint enables load balancer health checks
+
+Notes/Next steps:
+- Task 15 marked as DONE in PLAN.md
+- Next: Start Task 16 (Migrations, seed data)

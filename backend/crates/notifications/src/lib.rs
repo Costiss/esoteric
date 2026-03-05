@@ -5,4 +5,4 @@ pub mod models;
 
 pub use email::EmailService;
 pub use fcm::FcmService;
-pub use handlers::{NotificationState, DbPool};
+pub use handlers::{DbPool, NotificationState};

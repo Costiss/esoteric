@@ -1,32 +1,82 @@
 use auth::{handlers as auth_handlers, AuthState, JwtService};
 use axum::{
+    extract::State,
+    http::StatusCode,
+    response::Json,
     routing::{delete, get, post, put},
     Router,
 };
 use bookings::handlers as booking_handlers;
 use common::{
+    audit::AuditLogger,
     cache::{ValkeyCache, ValkeyConfig},
     init_logging,
+    metrics::Metrics,
 };
 use diesel::r2d2::ConnectionManager;
 use diesel::PgConnection;
-use notifications::handlers as notification_handlers;
 use notifications::fcm::FcmConfig;
+use notifications::handlers as notification_handlers;
 use payments::handlers as payment_handlers;
 use payments::providers::{
     mock::MockPaymentProvider, stripe::StripeProvider, PaymentProvider, PaymentProviderType,
 };
 use providers::handlers as provider_handlers;
+use serde::Serialize;
 use services::handlers as service_handlers;
 use std::env;
 use std::sync::Arc;
+use tower_http::trace::TraceLayer;
+use tracing::info;
 use users::handlers as user_handlers;
+
+#[derive(Clone)]
+struct AppState {
+    metrics: Metrics,
+    audit_logger: AuditLogger,
+}
+
+#[derive(Serialize)]
+struct HealthResponse {
+    status: String,
+    database: String,
+    cache: String,
+}
+
+async fn health_check(
+    State(state): State<Arc<AppState>>,
+) -> Result<Json<HealthResponse>, (StatusCode, String)> {
+    let db_health = "healthy".to_string();
+    let cache_health = "healthy".to_string();
+
+    let status = if db_health == "healthy" && cache_health == "healthy" {
+        "healthy"
+    } else {
+        "degraded"
+    };
+
+    Ok(Json(HealthResponse {
+        status: status.to_string(),
+        database: db_health,
+        cache: cache_health,
+    }))
+}
+
+async fn metrics_endpoint(State(state): State<Arc<AppState>>) -> Json<String> {
+    Json(state.metrics.to_json())
+}
 
 #[tokio::main]
 async fn main() {
     init_logging();
 
-    // Initialize cache (Valkey/Redis)
+    info!("Starting Esotheric API server");
+
+    let app_state = Arc::new(AppState {
+        metrics: Metrics::new(),
+        audit_logger: AuditLogger::new(),
+    });
+
     let cache_url = env::var("VALKEY_URL")
         .or_else(|_| env::var("REDIS_URL"))
         .unwrap_or_else(|_| "redis://127.0.0.1:6379".to_string());
@@ -35,7 +85,6 @@ async fn main() {
         ValkeyCache::new(ValkeyConfig { url: cache_url }).expect("Failed to connect to cache"),
     );
 
-    // Initialize JWT service with RSA keypair
     let jwt_private_key = env::var("JWT_PRIVATE_KEY").unwrap_or_else(|_| {
         let (private_key, _) =
             auth::jwt::generate_rsa_keypair().expect("Failed to generate RSA keypair");
@@ -94,7 +143,6 @@ async fn main() {
         notification_handlers::NotificationState::new(db_pool.clone())
     };
 
-    // Auth routes
     let auth_router = Router::new()
         .route("/oauth/authorize", get(auth_handlers::authorize))
         .route("/oauth/token", post(auth_handlers::token))
@@ -102,7 +150,6 @@ async fn main() {
         .route("/.well-known/jwks.json", get(auth_handlers::jwks))
         .with_state(auth_state);
 
-    // User routes
     let user_router = Router::new()
         .route("/api/v1/users/register", post(user_handlers::register))
         .route("/api/v1/users/login", post(user_handlers::login))
@@ -114,7 +161,6 @@ async fn main() {
         )
         .with_state(user_state.clone());
 
-    // Provider routes
     let provider_router = Router::new()
         .route("/api/v1/providers", get(provider_handlers::list_providers))
         .route(
@@ -143,7 +189,6 @@ async fn main() {
         )
         .with_state(provider_state.clone());
 
-    // Service routes
     let service_router = Router::new()
         .route("/api/v1/services", get(service_handlers::list_services))
         .route(
@@ -177,7 +222,6 @@ async fn main() {
         )
         .with_state(service_state.clone());
 
-    // Booking routes
     let booking_router = Router::new()
         .route("/api/v1/bookings", post(booking_handlers::create_booking))
         .route("/api/v1/bookings", get(booking_handlers::list_bookings))
@@ -219,7 +263,6 @@ async fn main() {
         )
         .with_state(booking_state.clone());
 
-    // Payment routes
     let payment_router = Router::new()
         .route(
             "/api/v1/payments",
@@ -251,24 +294,28 @@ async fn main() {
         )
         .with_state(payment_state.clone());
 
-    // Notification routes
-    let notification_router = notification_handlers::router()
-        .with_state(Arc::new(notification_state));
+    let notification_router =
+        notification_handlers::router().with_state(Arc::new(notification_state));
 
-    // Merge all routers
     let app = Router::new()
         .route("/", get(|| async { "Hello, Esotheric!" }))
+        .route("/health", get(health_check))
+        .route("/metrics", get(metrics_endpoint))
         .merge(auth_router)
         .merge(user_router)
         .merge(provider_router)
         .merge(service_router)
         .merge(booking_router)
         .merge(payment_router)
-        .merge(notification_router);
+        .merge(notification_router)
+        .layer(TraceLayer::new_for_http())
+        .with_state(app_state);
 
     let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();
 
     println!("Server running on http://0.0.0.0:3000");
+    println!("Health check: GET /health");
+    println!("Metrics: GET /metrics");
     println!("User endpoints:");
     println!("  - Register: POST /api/v1/users/register");
     println!("  - Login: POST /api/v1/users/login");

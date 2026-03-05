@@ -10,7 +10,11 @@ edition = "2021"
 
 [dependencies]
 axum = "0.8"
+serde = { version = "1.0", features = ["derive"] }
+tower = "0.5"
+tower-http = { version = "0.6", features = ["trace", "request-id", "cors"] }
 tokio = { version = "1.43", features = ["full"] }
+tracing = "0.1"
 common = { path = "crates/common" }
 db = { path = "crates/db" }
 auth = { path = "crates/auth" }

@@ -41,6 +41,7 @@ impl MockCache {
     }
 
     /// Remove expired entries from the cache.
+    #[allow(dead_code)]
     async fn cleanup_expired(&self) {
         let mut store = self.store.write().await;
         store.retain(|_, entry| !entry.is_expired());

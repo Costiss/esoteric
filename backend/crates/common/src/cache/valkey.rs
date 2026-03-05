@@ -59,7 +59,7 @@ impl ValkeyCache {
 impl Cache for ValkeyCache {
     async fn set(&self, key: &str, value: &str, ttl: Duration) -> Result<(), CacheError> {
         let mut conn = self.get_conn().await?;
-        let ttl_secs = ttl.as_secs() as u64;
+        let ttl_secs = ttl.as_secs();
 
         conn.set_ex::<_, _, ()>(key, value, ttl_secs)
             .await

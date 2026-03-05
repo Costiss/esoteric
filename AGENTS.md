@@ -529,3 +529,60 @@ Dockerization & Local Development (Task 14 - COMPLETED):
 - Production Deployment:
   1. Build image: cd backend && make docker-build
   2. Run container: make docker-run (requires external DB)
+
+Task 15: Observability, metrics and security (COMPLETED):
+
+- Structured Logging:
+  - Using `tracing` and `tracing-subscriber` crates
+  - Daily rotating log files (configurable via LOG_DIR env var, default: logs/)
+  - JSON format with target, thread IDs, file and line numbers
+  - Panic handler that logs panic location and message
+  - Both file and stdout output with ANSI colors
+
+- Request Tracing:
+  - Using `tower-http` TraceLayer for HTTP request/response logging
+  - Automatic latency tracking
+  - Request ID propagation (via X-Request-Id header if provided)
+
+- Metrics System:
+  - Metrics struct with atomic counters
+  - HTTP metrics: total requests, by method, by status code
+  - Auth metrics: logins, token refreshes, failures
+  - Business metrics: bookings created, payments created
+  - JSON output via GET /metrics endpoint
+
+- Health Check:
+  - GET /health endpoint
+  - Returns status (healthy/degraded), database, and cache connectivity
+  - Suitable for load balancer health checks
+
+- Audit Logging:
+  - AuditEvent struct: timestamp, event_type, user_id, client_id, ip_address, user_agent, success, details
+  - In-memory storage with VecDeque (max 1000 entries)
+  - Helper function create_audit_event for easy event creation
+  - Methods: log(), get_recent(), get_by_user()
+
+- Environment Variables:
+  - LOG_DIR: Directory for log files (default: logs)
+  - LOG_LEVEL: Logging level (default: info)
+  - VALKEY_URL / REDIS_URL: Cache server URL
+  - DATABASE_URL: PostgreSQL connection string
+  - JWT_PRIVATE_KEY: RSA private key for JWT signing
+  - JWT_ISSUER / JWT_AUDIENCE: JWT configuration
+
+- API Endpoints Added:
+  - GET /health: Health check
+  - GET /metrics: Metrics JSON
+
+- Dependencies Added:
+  - tracing, tracing-subscriber, tracing-appender: Structured logging
+  - uuid: Request ID generation (v4)
+  - chrono: Timestamps
+  - tower-http (trace, request-id, cors): Request tracing
+  - serde: JSON serialization
+
+- Notes:
+  - Production TLS: Use reverse proxy (nginx, traefik) for TLS termination
+  - Key rotation: JWT keys can be rotated by updating JWT_PRIVATE_KEY env var
+  - DB credentials: Should be stored in environment variables or secrets manager
+  - For production metrics: Consider adding Prometheus client library

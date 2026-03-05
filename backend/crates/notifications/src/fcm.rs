@@ -22,7 +22,9 @@ pub struct FcmService {
 impl FcmService {
     pub fn new(config: FcmConfig) -> Result<Self, FcmError> {
         if config.server_key.is_empty() {
-            return Err(FcmError::NotConfigured("Server key is required".to_string()));
+            return Err(FcmError::NotConfigured(
+                "Server key is required".to_string(),
+            ));
         }
 
         Ok(Self {
@@ -37,7 +39,11 @@ impl FcmService {
         body: &str,
         _data: Option<HashMap<String, String>>,
     ) -> Result<String, FcmError> {
-        log::info!("[FCM] Would send notification to token: title='{}', body='{}'", title, body);
+        log::info!(
+            "[FCM] Would send notification to token: title='{}', body='{}'",
+            title,
+            body
+        );
         Ok("mock_message_id".to_string())
     }
 
@@ -48,7 +54,12 @@ impl FcmService {
         body: &str,
         _data: Option<HashMap<String, String>>,
     ) -> Result<String, FcmError> {
-        log::info!("[FCM] Would send to topic '{}': title='{}', body='{}'", topic, title, body);
+        log::info!(
+            "[FCM] Would send to topic '{}': title='{}', body='{}'",
+            topic,
+            title,
+            body
+        );
         Ok("mock_message_id".to_string())
     }
 }
