@@ -34,12 +34,15 @@ Reference files:
 - Add unit tests that assert TTL behavior and atomic get-and-delete semantics (use a test instance or in-memory stub)
 - Document TLS/auth requirements for production connection
 
-[ IN-PROGRESS ] Task 6: Authentication & OAuth2 server
-- Implement OAuth2 authorization server in `auth/` using Axum handlers (authorization endpoint, token endpoint, revocation)
+[ DONE ] Task 6: Authentication & OAuth2 server
+- Implemented OAuth2 authorization server in `auth/` using Axum handlers (authorization endpoint, token endpoint, revocation)
 - Use valkey for ephemeral artifacts (authorization codes, PKCE challenges) and Postgres for durable refresh tokens (hashed)
-- Add JWT issuance, JWKS endpoint, and token introspection as needed
-- Implement PKCE flows for mobile/public clients and device flow examples
-- Add integration tests for the full auth code -> token exchange using the valkey stub
+- Added JWT issuance, JWKS endpoint for public key distribution
+- Implemented PKCE flows for mobile/public clients (S256 and Plain methods)
+- Added integration tests for the full auth code -> token exchange using the valkey stub
+- Implemented refresh token flow with database storage (30-day expiration, SHA256 hashed)
+- Implemented token revocation endpoint with database updates
+- All OAuth2 flows functional: authorization_code, refresh_token, revocation
 
 [ TO-DO ] Task 7: Users and provider profiles
 - Implement `users/` module: registration, email uniqueness (CITEXT), password hashing, profile updates

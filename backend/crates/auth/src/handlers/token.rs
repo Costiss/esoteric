@@ -7,6 +7,7 @@ use std::sync::Arc;
 
 use crate::models::{TokenRequest, TokenResponse, ErrorResponse};
 use crate::pkce::{verify_pkce_challenge, PkceChallengeMethod};
+use crate::db_models::{create_refresh_token, validate_refresh_token, get_token_scopes};
 use crate::AuthState;
 
 pub async fn token(
@@ -123,24 +124,127 @@ async fn handle_authorization_code(
             )
         })?;
 
+    // Generate and store refresh token
+    let refresh_token = if let Some(ref pool) = auth_state.db_pool {
+        let mut conn = pool.get().map_err(|e| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(ErrorResponse {
+                    error: "server_error".to_string(),
+                    error_description: Some(format!("Database connection error: {}", e)),
+                }),
+            )
+        })?;
+
+        match create_refresh_token(
+            &mut conn,
+            &auth_code_data.user_id,
+            &auth_code_data.client_id,
+            &auth_code_data.scopes,
+            30, // 30 days expiration
+        ) {
+            Ok((_, raw_token)) => Some(raw_token),
+            Err(e) => {
+                eprintln!("Failed to create refresh token: {}", e);
+                None
+            }
+        }
+    } else {
+        None
+    };
+
     Ok(Json(TokenResponse {
         access_token,
         token_type: "Bearer".to_string(),
         expires_in: 3600,
-        refresh_token: None,
+        refresh_token,
         scope: Some(auth_code_data.scopes.join(" ")),
     }))
 }
 
 async fn handle_refresh_token(
-    _auth_state: &AuthState,
-    _request: TokenRequest,
+    auth_state: &AuthState,
+    request: TokenRequest,
 ) -> Result<Json<TokenResponse>, (StatusCode, Json<ErrorResponse>)> {
-    Err((
-        StatusCode::NOT_IMPLEMENTED,
-        Json(ErrorResponse {
-            error: "server_error".to_string(),
-            error_description: Some("Refresh token flow not yet implemented".to_string()),
-        }),
-    ))
+    let raw_refresh_token = request.refresh_token.ok_or_else(|| {
+        (
+            StatusCode::BAD_REQUEST,
+            Json(ErrorResponse {
+                error: "invalid_request".to_string(),
+                error_description: Some("Missing 'refresh_token' parameter".to_string()),
+            }),
+        )
+    })?;
+
+    let pool = auth_state.db_pool.as_ref().ok_or_else(|| {
+        (
+            StatusCode::SERVICE_UNAVAILABLE,
+            Json(ErrorResponse {
+                error: "server_error".to_string(),
+                error_description: Some("Database not available".to_string()),
+            }),
+        )
+    })?;
+
+    let mut conn = pool.get().map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(ErrorResponse {
+                error: "server_error".to_string(),
+                error_description: Some(format!("Database connection error: {}", e)),
+            }),
+        )
+    })?;
+
+    let stored_token = validate_refresh_token(
+        &mut conn,
+        &raw_refresh_token,
+        &request.client_id,
+    ).map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(ErrorResponse {
+                error: "server_error".to_string(),
+                error_description: Some(format!("Database error: {}", e)),
+            }),
+        )
+    })?;
+
+    let stored_token = stored_token.ok_or_else(|| {
+        (
+            StatusCode::BAD_REQUEST,
+            Json(ErrorResponse {
+                error: "invalid_grant".to_string(),
+                error_description: Some("Invalid or expired refresh token".to_string()),
+            }),
+        )
+    })?;
+
+    let scopes = get_token_scopes(&stored_token);
+
+    let access_token = auth_state
+        .jwt_service
+        .generate_access_token(
+            &stored_token.user_id,
+            &stored_token.client_id,
+            &scopes,
+            3600,
+        )
+        .map_err(|e| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(ErrorResponse {
+                    error: "server_error".to_string(),
+                    error_description: Some(format!("Failed to generate access token: {}", e)),
+                }),
+            )
+        })?;
+
+    Ok(Json(TokenResponse {
+        access_token,
+        token_type: "Bearer".to_string(),
+        expires_in: 3600,
+        refresh_token: None, // Could implement refresh token rotation here
+        scope: Some(scopes.join(" ")),
+    }))
 }
