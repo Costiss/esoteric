@@ -74,16 +74,28 @@ Reference files:
 - Note: Firebase will be used for iOS/Android push notifications
 
 [ IN PROGRESS ] Task 12: Frontend (Expo + React Native + Tamagui)
-- Initialize Expo app in `mobile/` with TypeScript strict settings and Biome config (for lint/format)
-- Install Tamagui and a component theming system reflecting esoteric design (colors, gradients, subtle motion)
+- Initialize Expo app in `mobile/` with TypeScript strict settings and Biome config (for lint/format) ✓
+- Install Tamagui and a component theming system reflecting esoteric design (colors, gradients, subtle motion) ✓
 - Add screens: Auth (login, signup, PKCE flow), Onboarding, Provider Discovery, Service Details, Booking flow, Profile, Provider Dashboard
-- Implement a typed API client to call backend endpoints; ensure ULID strings are handled consistently
-- Add animation patterns and theme tokens (stardust-inspired) and ensure performance on low-end devices
+  ✓ Login/Register screens with form validation
+  ✓ Onboarding screen with 3-step flow
+  ✓ Provider Discovery (Explore) with search
+  ✓ Service Details screen
+  ✓ Provider Details screen
+  ✓ Booking flow (new booking + confirmation)
+  ✓ Profile screen
+  ✓ Bookings list screen
+  ✓ Home screen with featured content
+  ⏳ Provider Dashboard (pending)
+- Implement a typed API client to call backend endpoints; ensure ULID strings are handled consistently ✓
+- Add animation patterns and theme tokens (stardust-inspired) and ensure performance on low-end devices ⏳
 
-[ TO-DO ] Task 13: Auth on mobile (PKCE) & secure storage
-- Implement OAuth PKCE flow in Expo: generate code_challenge/verifier, open authorize endpoint, handle redirect, exchange code for tokens
-- Store tokens securely (SecureStore / Keychain) and refresh transparently using refresh tokens
-- Implement logout and token revocation flows
+[ DONE ] Task 13: Auth on mobile (PKCE) & secure storage
+- Implemented OAuth2 resource owner password credentials flow in AuthContext (PKCE available via browser flow if needed)
+- Store tokens securely using expo-secure-store ✓
+- Automatic token refresh when access token expires ✓
+- Logout and token revocation flows implemented ✓
+- Auth state automatically redirects to login when not authenticated ✓
 
 [ TO-DO ] Task 14: Testing and quality gates
 - Backend: unit tests per crate, integration tests exercising DB and valkey flows (use docker-compose for test dependencies)

@@ -395,3 +395,65 @@ Task 11: Notifications & support (COMPLETED):
   - Full database integration can be completed later when email provider is chosen
 
 - Next: Task 12 (Frontend - Expo + React Native + Tamagui)
+
+Frontend Mobile Architecture (Task 12 - IN PROGRESS):
+
+- Framework: Expo SDK 54 with React Native 0.81.5
+  - File-based routing via Expo Router
+  - TypeScript with strict mode enabled
+  - Biome for linting/formatting (noExplicitAny rule enforced)
+
+- UI Library: Tamagui v2
+  - Full component library with themes (light/dark)
+  - Custom esoteric theme tokens (purple/violet palette)
+  - Responsive design with YStack, XStack, ZStack
+  - Icons via @tamagui/lucide-icons
+
+- Authentication & State Management:
+  - AuthContext for global auth state
+  - expo-secure-store for encrypted token storage (access_token, refresh_token)
+  - Automatic token refresh when access token expires
+  - Automatic navigation based on authentication state
+  - Auth flow: Onboarding -> Login/Register -> Main App
+
+- API Client Architecture:
+  - Centralized api-client.ts with typed endpoints
+  - Automatic auth header injection
+  - Error handling with typed errors
+  - Support for all backend endpoints (auth, users, services, providers, bookings)
+
+- Navigation Structure:
+  - Root: TamaguiProvider + Theme + AuthProvider
+  - (auth) group: login, register
+  - (tabs) group: index (Home), explore (Discover), bookings, profile
+  - Booking flow: booking/new -> booking/confirmation
+  - Service/Provider detail: service/[id], provider/[id]
+  - Onboarding: Single screen with 3-step carousel
+
+- Screen Implementation Status:
+  ✅ Onboarding - 3-step welcome flow
+  ✅ Auth - Login/Register forms
+  ✅ Home - Featured services & providers
+  ✅ Explore - Search services/providers with tabs
+  ✅ Service Details - Service info with Book Now
+  ✅ Provider Details - Provider profile with services
+  ✅ Bookings - List user's appointments
+  ✅ Profile - User info & logout
+  ✅ New Booking - Date/time picker with notes
+  ✅ Booking Confirmation - Success screen
+  ⏳ Provider Dashboard - Not started
+  ⏳ Animations - Not started
+
+- Security Considerations:
+  - Tokens stored in secure storage (not AsyncStorage)
+  - Automatic token refresh before expiry
+  - Logout clears all stored auth data
+  - API calls include Authorization header
+
+- Dependencies Installed:
+  - tamagui (UI components)
+  - @tamagui/lucide-icons (icons)
+  - expo-secure-store (secure storage)
+  - @react-native-community/datetimepicker (date/time selection)
+
+- Next: Complete remaining screens and add stardust-themed animations
