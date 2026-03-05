@@ -97,3 +97,63 @@ Next updates will include OAuth2 server implementation (Task 6).
 
 I'll update this file with more architecture notes and decisions as tasks
 progress.
+
+OAuth2 Authorization Server Architecture (Task 6):
+
+- Implemented OAuth2 authorization server with Axum handlers:
+  - Authorization endpoint: `GET /oauth/authorize` - Issues authorization codes with PKCE
+  - Token endpoint: `POST /oauth/token` - Exchanges codes for access tokens, supports refresh tokens
+  - Revocation endpoint: `POST /oauth/revoke` - Token revocation (placeholder)
+  - JWKS endpoint: `GET /.well-known/jwks.json` - Public key distribution for token validation
+
+- Security features implemented:
+  - PKCE (Proof Key for Code Exchange) support: S256 and Plain methods
+    - S256 recommended for mobile apps (code challenge = SHA256(code_verifier))
+    - Prevents authorization code interception attacks
+  - Atomic authorization code consumption using GETDEL command
+    - Prevents replay attacks by immediately deleting codes after first use
+    - 10-minute TTL on all authorization codes stored in Valkey
+  - RSA-256 (RS256) for JWT signing
+    - Private key for signing, public key for validation
+    - JWKS endpoint for external token validation
+
+- JWT implementation details:
+  - Using `jsonwebtoken` crate with `aws_lc_rs` crypto backend
+  - Access tokens include claims: sub (user_id), aud, iss, exp, iat, scope, client_id
+  - 1-hour default expiration for access tokens
+  - JWKS response includes RSA public key in JWK format (kty, alg, use, n, e)
+
+- Database schema (migrations/0002_create_oauth_tables.sql):
+  - `oauth_clients` table: Stores registered OAuth applications
+    - client_id, client_secret_hash, redirect_uris (JSONB), allowed_scopes (JSONB)
+    - is_confidential flag for distinguishing public vs confidential clients
+  - `refresh_tokens` table: Durable refresh token storage
+    - token_hash (unique), user_id, client_id, scopes, expires_at, revoked flag
+    - Indexed on user_id, token_hash, and expires_at for efficient queries
+
+- Test coverage:
+  - 9 total tests in auth crate (6 integration + 3 unit tests)
+  - Full authorization code flow with PKCE
+  - Code reuse prevention (should fail on second attempt)
+  - TTL expiration handling
+  - PKCE verification (success and failure cases)
+  - JWT generation and validation
+  - JWKS format validation
+  - Client ID validation
+
+- Architectural decisions:
+  - Authorization codes stored in Valkey (ephemeral) vs refresh tokens in PostgreSQL (durable)
+  - MockCache used for fast unit tests without external dependencies
+  - ValkeyCache integration tests marked with #[ignore] for optional validation
+  - AuthState struct holds JwtService and Cache for easy handler access
+  - Handlers return proper OAuth2 error responses per RFC 6749
+
+- Remaining work for Task 6 completion:
+  - Refresh token flow: Database integration for storing/validating refresh tokens
+  - Token revocation: Implement actual revocation logic with database updates
+  - Device flow: Optional implementation for devices without browsers
+  - Token introspection: Optional endpoint for resource servers to validate tokens
+  - Client authentication: Validate client_id and client_secret for confidential clients
+
+Next updates will focus on integrating refresh tokens with the database (Task 6 completion)
+and starting user/provider profile implementation (Task 7).

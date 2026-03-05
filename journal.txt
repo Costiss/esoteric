@@ -146,3 +146,42 @@ Reflections:
 Notes/Next steps:
 - Task 5 marked as Done in PLAN.md.
 - Ready to start Task 6: Authentication & OAuth2 server using the cache for ephemeral tokens.
+
+2026-03-04 (Task 6 - OAuth2 Authorization Server):
+- Completed OAuth2 authorization server implementation with the following components:
+  1. **JWT Service** (`jwt.rs`): RSA keypair generation, access token creation/validation, JWKS endpoint
+  2. **PKCE Support** (`pkce.rs`): S256 and Plain challenge methods for secure mobile auth
+  3. **OAuth2 Models** (`models.rs`): Request/response types for authorization, token, and revoke endpoints
+  4. **HTTP Handlers** (`handlers/`):
+     - `authorize.rs`: Authorization endpoint with PKCE support, stores codes in cache
+     - `token.rs`: Token endpoint supporting authorization_code and refresh_token grants
+     - `revoke.rs`: Token revocation endpoint (placeholder)
+     - `jwks.rs`: JWKS endpoint for public key distribution
+  5. **Server Integration**: Updated `server.rs` to mount auth routes with AuthState
+  6. **Integration Tests**: 6 new tests covering full auth flow, code TTL, PKCE, and JWT validation
+
+Key technical decisions:
+- Used `jsonwebtoken` crate with `aws_lc_rs` feature for crypto backend
+- Fixed JWT validation: create decoding key from public key, not private key
+- Authorization codes use atomic get-and-delete to prevent replay attacks
+- All auth codes stored in Valkey with 10-minute TTL (600 seconds)
+- PKCE S256 is the recommended method for mobile apps
+
+Database schema added:
+- `oauth_clients` table for registered OAuth applications
+- `refresh_tokens` table for durable refresh token storage (hashed)
+
+All 9 auth crate tests pass successfully.
+
+Reflections:
+- Implementing OAuth2 from scratch requires careful attention to security details
+- PKCE is essential for mobile/public clients to prevent authorization code interception
+- Atomic cache operations (get_and_delete) are critical for preventing race conditions in code exchange
+- The Cache trait abstraction made testing straightforward with MockCache
+- JWT encoding/decoding requires proper crypto provider initialization
+
+Notes/Next steps:
+- Task 6 remains IN-PROGRESS as refresh token flow needs database integration
+- Device flow not yet implemented (optional enhancement)
+- Token introspection endpoint can be added if needed
+- Consider implementing refresh token rotation for enhanced security
