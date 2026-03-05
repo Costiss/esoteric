@@ -1,14 +1,4 @@
--- Initial Diesel migration stub: create users and services tables using ULID CHAR(26)
-CREATE TABLE users (
-  id CHAR(26) PRIMARY KEY,
-  email TEXT UNIQUE NOT NULL,
-  password_hash TEXT,
-  role TEXT NOT NULL DEFAULT 'customer',
-  is_active BOOLEAN NOT NULL DEFAULT true,
-  created_at timestamptz NOT NULL DEFAULT now(),
-  updated_at timestamptz NOT NULL DEFAULT now()
-);
-
+-- Services table for esotheric service offerings
 CREATE TABLE services (
   id CHAR(26) PRIMARY KEY,
   provider_id CHAR(26) NOT NULL REFERENCES providers(id),

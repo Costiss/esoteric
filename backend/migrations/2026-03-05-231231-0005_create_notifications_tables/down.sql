@@ -1,0 +1,3 @@
+DROP TABLE IF EXISTS support_messages CASCADE;
+DROP TABLE IF EXISTS support_tickets CASCADE;
+DROP TABLE IF EXISTS push_tokens CASCADE;

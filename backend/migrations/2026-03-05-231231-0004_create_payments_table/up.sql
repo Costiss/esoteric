@@ -26,18 +26,3 @@ CREATE INDEX idx_payments_provider_id ON payments(provider_id);
 CREATE INDEX idx_payments_status ON payments(status);
 CREATE INDEX idx_payments_provider_type ON payments(provider_type);
 CREATE INDEX idx_payments_provider_payment_id ON payments(provider_payment_id);
-
--- Payment status enum values:
--- pending: Payment created, awaiting payment method
--- requires_payment_method: Payment needs a payment method
--- requires_confirmation: Payment needs confirmation
--- requires_action: Payment requires additional action (3D Secure)
--- processing: Payment is being processed
--- succeeded: Payment was successful
--- canceled: Payment was canceled
--- refunded: Payment was refunded
-
--- Supported provider types: stripe, mercadopago, pagseguro
-
--- Commission calculation: platform takes percentage of each transaction
--- Default commission rate: 10% (configurable)

@@ -24,13 +24,3 @@ CREATE INDEX idx_bookings_provider_id ON bookings(provider_id);
 CREATE INDEX idx_bookings_status ON bookings(status);
 CREATE INDEX idx_bookings_start_ts ON bookings(start_ts);
 CREATE INDEX idx_bookings_provider_status ON bookings(provider_id, status);
-
--- Booking status enum values:
--- requested: Initial state when customer requests booking
--- confirmed: Provider has confirmed the booking
--- in_progress: Booking is currently happening
--- completed: Booking has been completed
--- cancelled: Booking was cancelled
-
--- Prevent double-booking: unique constraint on provider + overlapping time slots
--- This is enforced at application level with SELECT FOR UPDATE
