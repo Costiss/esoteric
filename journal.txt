@@ -111,3 +111,38 @@ Reflections:
 Notes/Next steps:
 - Task 2 marked as Done in PLAN.md.
 - Next: Start Task 5 (Valkey cache client) or Task 6 (Authentication & OAuth2 server) depending on priorities.
+
+2026-03-04 (Task 5 completed):
+- Replaced fred Redis client with redis crate (more popular and well-documented).
+- Implemented ValkeyCache in `backend/crates/common/src/cache/valkey.rs` with proper connection management:
+  - Uses `redis::Client` and `get_multiplexed_async_connection()` for async operations
+  - Supports connection via URL from environment variables (VALKEY_URL or REDIS_URL)
+  - Implements all Cache trait methods: set, get, get_and_delete, delete
+  - Uses SETEX for atomic set-with-TTL operation
+  - Uses GETDEL command for atomic get-and-delete operation
+  - Added proper error handling with CacheError enum
+- Implemented MockCache in `backend/crates/common/src/cache/mock.rs` for testing:
+  - In-memory HashMap with RwLock for thread safety
+  - TTL support using tokio::time::Instant for test time manipulation
+  - Atomic get_and_delete operation
+- Added comprehensive unit tests for MockCache (all passing):
+  - test_set_and_get, test_get_missing_key
+  - test_ttl_expiration (using tokio's pause/advance for time control)
+  - test_get_and_delete, test_get_and_delete_missing_key, test_get_and_delete_expired_key
+  - test_delete, test_delete_missing_key
+- Added integration tests for ValkeyCache (marked with #[ignore] as they require Redis/Valkey server).
+- Updated Cache trait to use async-trait for proper async support.
+- Added async-trait and redis dependencies to common/Cargo.toml.
+- Documented production requirements for TLS and authentication in code comments.
+- All tests pass: 11 passed, 3 ignored (integration tests).
+
+Reflections:
+- The redis crate provides a cleaner API than fred for our use case.
+- Using tokio::time::Instant instead of std::time::Instant is crucial for TTL testing with time manipulation.
+- The Cache trait abstraction allows easy swapping between real (ValkeyCache) and mock (MockCache) implementations for testing.
+- GETDEL command (Redis 6.2+) provides atomic get-and-delete semantics needed for OAuth2 authorization code consumption.
+- Production deployments should use rediss:// URLs for TLS and configure authentication properly.
+
+Notes/Next steps:
+- Task 5 marked as Done in PLAN.md.
+- Ready to start Task 6: Authentication & OAuth2 server using the cache for ephemeral tokens.

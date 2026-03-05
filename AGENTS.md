@@ -61,8 +61,39 @@ Recent edits (Task 2 completion):
 - Fixed biome.json for Biome 2.4.5 compatibility.
 - Verified TypeScript strict mode and Biome linting work correctly.
 
-Next updates will include decisions about the cache layer (valkey vs Redis
-shim) and CI configuration.
+Cache Layer Architecture (Task 5):
+
+- Selected `redis` crate (v0.29) as the Redis/Valkey client library over `fred`:
+  - More widely used and battle-tested in the Rust ecosystem
+  - Cleaner API for our use case
+  - Better documentation and community support
+  - Native async support with tokio
+
+- Cache abstraction design in `backend/crates/common/src/cache/`:
+  - Trait-based design (`Cache` trait) allows easy swapping between implementations
+  - `ValkeyCache`: Production implementation using Redis/Valkey
+  - `MockCache`: In-memory implementation for unit testing
+  - Both implement the same interface: `set`, `get`, `get_and_delete`, `delete`
+
+- Key implementation details:
+  - Uses multiplexed async connections for better performance
+  - SETEX command for atomic set-with-TTL (prevents race conditions)
+  - GETDEL command (Redis 6.2+) for atomic get-and-delete (critical for OAuth2 auth codes)
+  - TTL support tested using tokio's time manipulation (pause/advance)
+  - Connection URL from environment variables (VALKEY_URL or REDIS_URL)
+
+- Production deployment considerations:
+  - Use `rediss://` URL scheme for TLS encryption
+  - Configure authentication via URL (redis://username:password@host:port)
+  - Valkey fully compatible with Redis protocol
+  - Connection pooling handled internally by redis crate
+
+- Testing strategy:
+  - MockCache for fast, deterministic unit tests
+  - ValkeyCache integration tests for validation (require running server)
+  - All MockCache tests pass with proper TTL verification
+
+Next updates will include OAuth2 server implementation (Task 6).
 
 I'll update this file with more architecture notes and decisions as tasks
 progress.

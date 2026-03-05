@@ -29,7 +29,7 @@ Reference files:
 - Update Diesel schema types and migrations to use `CHAR(26)` primary keys as shown in TECHNINAL_SPEC_BACKEND.md
 - Create helper utilities to generate ULIDs server-side and tests for deterministic formats
 
-[ TO-DO ] Task 5: Valkey cache client and ephemeral storage
+[ DONE ] Task 5: Valkey cache client and ephemeral storage
 - Design a small valkey client abstraction in `common/cache/valkey` with API: `set_key`, `get`, `get_and_delete` (atomic), `delete`
 - Add unit tests that assert TTL behavior and atomic get-and-delete semantics (use a test instance or in-memory stub)
 - Document TLS/auth requirements for production connection
