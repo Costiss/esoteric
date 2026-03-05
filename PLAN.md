@@ -103,31 +103,26 @@ Reference files:
 - Logout and token revocation flows implemented ✓
 - Auth state automatically redirects to login when not authenticated ✓
 
-[ TO-DO ] Task 14: Testing and quality gates
-- Backend: unit tests per crate, integration tests exercising DB and valkey flows (use docker-compose for test dependencies)
-- Frontend: component and e2e tests (Detox or Cypress/Playwright if web fallback exists)
-- CI: run Biome lint/format, TypeScript build, cargo fmt/clippy, and test suites on PRs
-
-[ TO-DO ] Task 15: Dockerization & local dev environment
+[ TO-DO ] Task 14: Dockerization & local dev environment
 - Add Dockerfiles for backend and mobile dev container examples (Expo dev inside container if desired)
 - Add docker-compose.dev with Postgres and a valkey-compatible cache (Redis or a valkey shim) for local development
 - Add `make` targets or npm scripts to simplify common tasks (start-db, start-backend, start-mobile)
 
-[ TO-DO ] Task 16: Observability, metrics and security
+[ TO-DO ] Task 15: Observability, metrics and security
 - Add structured logging and request tracing in `common/` (optionally OpenTelemetry integration)
 - Expose basic metrics endpoint and health checks
 - Security: enforce TLS, rotate keys, secure DB credentials, audit logs for auth events
 
-[ TO-DO ] Task 17: Migrations, seed data and sample fixtures
+[ TO-DO ] Task 16: Migrations, seed data and sample fixtures
 - Create initial Diesel migrations for users, services, bookings, payments, refresh_tokens
 - Add seed generator that creates sample providers, services and bookings for development
 
-[ TO-DO ] Task 18: Deploy & release strategy
+[ TO-DO ] Task 17: Deploy & release strategy
 - Build single backend binary and create a Docker image for deployment
 - Create simple deployment recipe (Heroku/GCP/AWS ECS) for early testing; for production recommend k8s or managed container service
 - Plan DB backup and valkey availability/replication
 
-[ TO-DO ] Task 19: Documentation and handover
+[ TO-DO ] Task 18: Documentation and handover
 - Document API endpoints (OpenAPI/Swagger) and auth flows (PKCE examples)
 - Add developer contribution guide, environment variable references, and runbook for ops
 
