@@ -279,3 +279,52 @@ Reflections:
 Notes/Next steps:
 - Task 8 marked as DONE in PLAN.md
 - Ready to start Task 9: Bookings & appointment lifecycle
+
+2026-03-04 (Task 9 completed - Bookings & appointment lifecycle):
+- Implemented bookings crate with:
+  - Database migration 0004 for bookings table
+  - Booking models (Booking, NewBooking) with Diesel ORM
+  - Booking status enum: requested, confirmed, in_progress, completed, cancelled
+  - CRUD operations: create, read, update booking status
+  - Booking state machine with valid transitions:
+    - requested -> confirmed, cancelled
+    - confirmed -> in_progress, cancelled
+    - in_progress -> completed, cancelled
+  - Double-booking prevention using overlapping time slot check
+  - Cancellation with reason and cancelled_by tracking
+  
+- Database schema:
+  - bookings table: id, service_id, customer_id, provider_id, start_ts, end_ts, status
+  - price_cents, currency, client_notes, provider_notes
+  - cancellation_reason, cancelled_by, cancelled_at
+  - Indexes on service_id, customer_id, provider_id, status, start_ts
+  
+- API endpoints:
+  - Create booking: POST /api/v1/bookings
+  - List bookings: GET /api/v1/bookings
+  - Get booking: GET /api/v1/bookings/:booking_id
+  - Confirm booking: POST /api/v1/bookings/:booking_id/confirm
+  - Start booking: POST /api/v1/bookings/:booking_id/start
+  - Complete booking: POST /api/v1/bookings/:booking_id/complete
+  - Cancel booking: POST /api/v1/bookings/:booking_id/cancel
+  - Get customer bookings: GET /api/v1/customers/:customer_id/bookings
+  - Get provider bookings: GET /api/v1/providers/:provider_id/bookings
+  - Get service bookings: GET /api/v1/services/:service_id/bookings
+  - Check availability: GET /api/v1/providers/:provider_id/availability
+
+- Implementation details:
+  - Uses overlapping query to check for double-booking (provider + time slot)
+  - Booking times calculated from service duration
+  - Service must be published to create booking
+  - BookingError implements IntoResponse for proper error handling
+  - All handlers return async Result with proper error types
+
+Reflections:
+- Booking state machine ensures valid state transitions only
+- Double-booking prevention uses database query filtering
+- Booking creation requires published service to prevent booking unpublished services
+- Follows same patterns as other crates (services, providers)
+
+Notes/Next steps:
+- Task 9 marked as DONE in PLAN.md
+- Ready to start Task 10: Payments integration

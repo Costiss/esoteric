@@ -267,3 +267,42 @@ Update/Delete service  - Get/: /api/v1/services/:service_id
   - Follows same patterns as providers crate for consistency
   
 - Next: Task 9 (Bookings & appointment lifecycle)
+
+Task 9: Bookings & appointment lifecycle (COMPLETED):
+
+- Implemented bookings module:
+  - Booking status state machine: requested -> confirmed -> in_progress -> completed
+  - Cancellation allowed from any state except completed
+  - Double-booking prevention using overlapping time slot query
+  - Service must be published to create booking
+  - Booking times calculated from service duration_minutes
+
+- Database schema (bookings table):
+  - id, service_id, customer_id, provider_id (all CHAR(26) ULIDs)
+  - start_ts, end_ts (TIMESTAMPTZ for timezone-aware scheduling)
+  - status (TEXT): requested, confirmed, in_progress, completed, cancelled
+  - price_cents, currency (from service at booking time)
+  - client_notes, provider_notes (optional text)
+  - cancellation_reason, cancelled_by, cancelled_at (for audit trail)
+  - Proper indexes for efficient queries
+
+- API endpoints:
+  - Create booking: POST /api/v1/bookings
+  - Get booking: GET /api/v1/bookings/:booking_id
+  - List bookings: GET /api/v1/bookings
+  - Confirm: POST /api/v1/bookings/:booking_id/confirm
+  - Start: POST /api/v1/bookings/:booking_id/start
+  - Complete: POST /api/v1/bookings/:booking_id/complete
+  - Cancel: POST /api/v1/bookings/:booking_id/cancel
+  - Customer bookings: GET /api/v1/customers/:customer_id/bookings
+  - Provider bookings: GET /api/v1/providers/:provider_id/bookings
+  - Service bookings: GET /api/v1/services/:service_id/bookings
+  - Check availability: GET /api/v1/providers/:provider_id/availability
+
+- Implementation details:
+  - Double-booking prevention: query overlapping bookings (start < new_end AND end > new_start)
+  - Valid state transitions enforced in update_booking_status function
+  - BookingError implements IntoResponse for proper error handling
+  - Follows same module structure as services and providers crates
+
+- Next: Task 10 (Payments integration)

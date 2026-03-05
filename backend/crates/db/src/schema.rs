@@ -57,11 +57,6 @@ table! {
     }
 }
 
-joinable!(services -> providers (provider_id));
-joinable!(services -> users (provider_id));
-joinable!(refresh_tokens -> users (user_id));
-joinable!(refresh_tokens -> oauth_clients (client_id));
-
 table! {
     providers (id) {
         id -> Char,
@@ -77,4 +72,39 @@ table! {
     }
 }
 
-allow_tables_to_appear_in_same_query!(users, services, oauth_clients, refresh_tokens, providers);
+table! {
+    bookings (id) {
+        id -> Char,
+        service_id -> Char,
+        customer_id -> Char,
+        provider_id -> Char,
+        start_ts -> Timestamptz,
+        end_ts -> Timestamptz,
+        status -> Text,
+        price_cents -> Integer,
+        currency -> Text,
+        client_notes -> Nullable<Text>,
+        provider_notes -> Nullable<Text>,
+        cancellation_reason -> Nullable<Text>,
+        cancelled_by -> Nullable<Char>,
+        cancelled_at -> Nullable<Timestamptz>,
+        created_at -> Timestamptz,
+        updated_at -> Timestamptz,
+    }
+}
+
+joinable!(services -> providers (provider_id));
+joinable!(refresh_tokens -> users (user_id));
+joinable!(refresh_tokens -> oauth_clients (client_id));
+joinable!(bookings -> services (service_id));
+joinable!(bookings -> users (customer_id));
+joinable!(bookings -> providers (provider_id));
+
+allow_tables_to_appear_in_same_query!(
+    users,
+    services,
+    oauth_clients,
+    refresh_tokens,
+    providers,
+    bookings
+);

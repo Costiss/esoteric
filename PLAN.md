@@ -54,7 +54,7 @@ Reference files:
 - Provide APIs to create/update/publish/unpublish services, attach tags and metadata
 - Add search/filter endpoints (by tag, price range, provider rating)
 
-[ TO-DO ] Task 9: Bookings & appointment lifecycle
+[ DONE ] Task 9: Bookings & appointment lifecycle
 - Implement `bookings/` module to handle create/request/confirm/cancel flows
 - Use DB transactions and SELECT ... FOR UPDATE or a reservation table to avoid double-booking
 - Integrate payment-intent orchestration: create a provisional booking, hold availability, require payment confirmation to finalize

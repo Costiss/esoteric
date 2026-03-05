@@ -3,6 +3,7 @@ use axum::{
     routing::{delete, get, post, put},
     Router,
 };
+use bookings::handlers as booking_handlers;
 use common::{
     cache::{ValkeyCache, ValkeyConfig},
     init_logging,
@@ -56,6 +57,7 @@ async fn main() {
     let user_state = user_handlers::UserState::new(db_pool.clone());
     let provider_state = provider_handlers::ProviderState::new(db_pool.clone());
     let service_state = service_handlers::ServiceState::new(db_pool.clone());
+    let booking_state = booking_handlers::BookingState::new(db_pool.clone());
 
     // Auth routes
     let auth_router = Router::new()
@@ -140,13 +142,56 @@ async fn main() {
         )
         .with_state(service_state.clone());
 
+    // Booking routes
+    let booking_router = Router::new()
+        .route("/api/v1/bookings", post(booking_handlers::create_booking))
+        .route("/api/v1/bookings", get(booking_handlers::list_bookings))
+        .route(
+            "/api/v1/bookings/:booking_id",
+            get(booking_handlers::get_booking),
+        )
+        .route(
+            "/api/v1/bookings/:booking_id/confirm",
+            post(booking_handlers::confirm_booking),
+        )
+        .route(
+            "/api/v1/bookings/:booking_id/start",
+            post(booking_handlers::start_booking),
+        )
+        .route(
+            "/api/v1/bookings/:booking_id/complete",
+            post(booking_handlers::complete_booking),
+        )
+        .route(
+            "/api/v1/bookings/:booking_id/cancel",
+            post(booking_handlers::cancel_booking),
+        )
+        .route(
+            "/api/v1/customers/:customer_id/bookings",
+            get(booking_handlers::get_customer_bookings),
+        )
+        .route(
+            "/api/v1/providers/:provider_id/bookings",
+            get(booking_handlers::get_provider_bookings),
+        )
+        .route(
+            "/api/v1/services/:service_id/bookings",
+            get(booking_handlers::get_service_bookings),
+        )
+        .route(
+            "/api/v1/providers/:provider_id/availability",
+            get(booking_handlers::check_availability),
+        )
+        .with_state(booking_state.clone());
+
     // Merge all routers
     let app = Router::new()
         .route("/", get(|| async { "Hello, Esotheric!" }))
         .merge(auth_router)
         .merge(user_router)
         .merge(provider_router)
-        .merge(service_router);
+        .merge(service_router)
+        .merge(booking_router);
 
     let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();
 
@@ -180,6 +225,18 @@ async fn main() {
     println!("  - Token: POST /oauth/token");
     println!("  - Revoke: POST /oauth/revoke");
     println!("  - JWKS: GET /.well-known/jwks.json");
+    println!("Booking endpoints:");
+    println!("  - Create Booking: POST /api/v1/bookings");
+    println!("  - List Bookings: GET /api/v1/bookings");
+    println!("  - Get Booking: GET /api/v1/bookings/:booking_id");
+    println!("  - Confirm Booking: POST /api/v1/bookings/:booking_id/confirm");
+    println!("  - Start Booking: POST /api/v1/bookings/:booking_id/start");
+    println!("  - Complete Booking: POST /api/v1/bookings/:booking_id/complete");
+    println!("  - Cancel Booking: POST /api/v1/bookings/:booking_id/cancel");
+    println!("  - Get Customer Bookings: GET /api/v1/customers/:customer_id/bookings");
+    println!("  - Get Provider Bookings: GET /api/v1/providers/:provider_id/bookings");
+    println!("  - Get Service Bookings: GET /api/v1/services/:service_id/bookings");
+    println!("  - Check Availability: GET /api/v1/providers/:provider_id/availability");
 
     axum::serve(listener, app).await.unwrap();
 }
