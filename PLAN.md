@@ -34,7 +34,7 @@ Reference files:
 - Add unit tests that assert TTL behavior and atomic get-and-delete semantics (use a test instance or in-memory stub)
 - Document TLS/auth requirements for production connection
 
-[ TO-DO ] Task 6: Authentication & OAuth2 server
+[ IN-PROGRESS ] Task 6: Authentication & OAuth2 server
 - Implement OAuth2 authorization server in `auth/` using Axum handlers (authorization endpoint, token endpoint, revocation)
 - Use valkey for ephemeral artifacts (authorization codes, PKCE challenges) and Postgres for durable refresh tokens (hashed)
 - Add JWT issuance, JWKS endpoint, and token introspection as needed

@@ -7,7 +7,7 @@ mod mock;
 mod valkey;
 
 pub use mock::MockCache;
-pub use valkey::ValkeyCache;
+pub use valkey::{ValkeyCache, ValkeyConfig};
 
 use async_trait::async_trait;
 use std::time::Duration;

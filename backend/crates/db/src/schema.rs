@@ -29,5 +29,35 @@ table! {
     }
 }
 
+table! {
+    oauth_clients (id) {
+        id -> Char,
+        client_id -> Text,
+        client_name -> Text,
+        client_secret_hash -> Nullable<Text>,
+        redirect_uris -> Jsonb,
+        allowed_scopes -> Jsonb,
+        is_confidential -> Bool,
+        is_active -> Bool,
+        created_at -> Timestamptz,
+        updated_at -> Timestamptz,
+    }
+}
+
+table! {
+    refresh_tokens (id) {
+        id -> Char,
+        user_id -> Char,
+        client_id -> Text,
+        token_hash -> Text,
+        scopes -> Jsonb,
+        expires_at -> Timestamptz,
+        revoked -> Bool,
+        created_at -> Timestamptz,
+    }
+}
+
 joinable!(services -> users (provider_id));
-allow_tables_to_appear_in_same_query!(users, services);
+joinable!(refresh_tokens -> users (user_id));
+joinable!(refresh_tokens -> oauth_clients (client_id));
+allow_tables_to_appear_in_same_query!(users, services, oauth_clients, refresh_tokens);
