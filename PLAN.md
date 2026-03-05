@@ -10,7 +10,7 @@ Reference files:
 - Create `backend/` and `mobile/` top-level directories and initial README files
 - Add a `backend/Cargo.toml` workspace and `backend/crates/` layout per TECHNINAL_SPEC_BACKEND.md
 
-[ In Progress ] Task 2: Development environment & tooling
+[ DONE ] Task 2: Development environment & tooling
 - Backend: install Rust toolchain, `cargo`, Diesel CLI, PostgreSQL locally or in Docker
 - Frontend: install Node.js, Expo CLI, Yarn/PNPM, configure TypeScript strict mode
 - Formatting/linting: add Biome config for the mobile app (no `any` rule), add rustfmt and clippy setup

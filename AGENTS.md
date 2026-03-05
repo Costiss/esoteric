@@ -47,6 +47,20 @@ Recent edits (2026-03-04):
   `mobile/README.md` to describe required tools, Docker-based dependencies,
   and common commands for backend and mobile workflows.
 
+Recent edits (Task 2 completion):
+
+- Initialized Expo app in `mobile/` with Expo SDK 54 and React Native 0.81.5.
+- Installed `@tamagui/core` and `@tamagui/babel-plugin` for UI component library.
+- Created `mobile/babel.config.js` with Tamagui babel plugin and reanimated plugin.
+- Created `mobile/tamagui.config.ts` with custom esoteric theme tokens:
+  - Primary colors: purple/violet palette (#8B5CF6, #A78BFA, #C4B5FD)
+  - Accent: amber (#F59E0B)
+  - Dark theme background: deep indigo (#0F0D1A)
+- Updated `mobile/package.json`: renamed to "esotheric-mobile", added biome lint/format scripts.
+- Installed `@biomejs/biome` as dev dependency.
+- Fixed biome.json for Biome 2.4.5 compatibility.
+- Verified TypeScript strict mode and Biome linting work correctly.
+
 Next updates will include decisions about the cache layer (valkey vs Redis
 shim) and CI configuration.
 
