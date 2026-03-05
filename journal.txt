@@ -232,7 +232,50 @@ Reflections:
 - CITEXT changed to TEXT for Diesel compatibility (case-insensitive handled in app)
 - Separate routers with merged() approach works well for different state types
 
+2026-03-04 (Task 8 completed - Services catalog & publishing):
+- Implemented services crate with:
+  - Database models (Service, NewService) with Diesel ORM
+  - CRUD operations: create, read, update, delete services
+  - Publish/unpublish functionality for service lifecycle
+  - Search/filter by tag, price range, provider verification status
+  
+- Database schema:
+  - Services table: id, provider_id (FK), title, description, duration_minutes, price_cents, currency, tags, metadata, is_published
+  - Foreign key changed from users to providers table
+  
+- API endpoints:
+  - List services: GET /api/v1/services
+  - Search services: GET /api/v1/services/search (by tag, price range, provider verified)
+  - Create service: POST /api/v1/services
+  - Get service: GET /api/v1/services/:service_id
+  - Update service: PUT /api/v1/services/:service_id
+  - Delete service: DELETE /api/v1/services/:service_id
+  - Publish service: POST /api/v1/services/:service_id/publish
+  - Unpublish service: POST /api/v1/services/:service_id/unpublish
+  - Get provider services: GET /api/v1/providers/:provider_id/services
+  
+- Search features:
+  - Filter by tag (uses PostgreSQL array containment)
+  - Filter by price range (min_price, max_price)
+  - Filter by provider verified status
+  - Combined with published_only filter
+  
+- Server integration:
+  - Added ServiceState with db_pool
+  - Integrated services routes into server.rs
+  - All routes properly handle errors
+  
+- Code quality:
+  - Follows same patterns as providers crate
+  - cargo fmt and clippy pass (warnings are pre-existing)
+  - Tests require libpq for linking (same as other crates)
+
+Reflections:
+- Using Diesel with joins requires .select(Service::as_select()) to avoid tuple return type
+- Services linked to providers table (not users) for proper foreign key relationship
+- Tags stored as TEXT[] in PostgreSQL for efficient filtering
+- Search function uses inner_join with providers to filter by verification status
+
 Notes/Next steps:
-- Task 7 marked as DONE in PLAN.md
-- Ready to start Task 8: Services catalog & publishing
-- Admin APIs for provider verification included in providers crate
+- Task 8 marked as DONE in PLAN.md
+- Ready to start Task 9: Bookings & appointment lifecycle

@@ -49,7 +49,7 @@ Reference files:
 - Implement `providers/` module: create provider profile, list services, working hours and availability metadata
 - Add admin APIs for provider verification and moderation
 
-[ TO-DO ] Task 8: Services catalog & publishing
+[ DONE ] Task 8: Services catalog & publishing
 - Implement `services/` module and DDL (see TECHNINAL_SPEC_BACKEND.md services example)
 - Provide APIs to create/update/publish/unpublish services, attach tags and metadata
 - Add search/filter endpoints (by tag, price range, provider rating)

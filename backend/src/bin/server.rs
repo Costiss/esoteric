@@ -1,6 +1,6 @@
 use auth::{handlers as auth_handlers, AuthState, JwtService};
 use axum::{
-    routing::{get, post, put},
+    routing::{delete, get, post, put},
     Router,
 };
 use common::{
@@ -10,6 +10,7 @@ use common::{
 use diesel::r2d2::ConnectionManager;
 use diesel::PgConnection;
 use providers::handlers as provider_handlers;
+use services::handlers as service_handlers;
 use std::env;
 use std::sync::Arc;
 use users::handlers as user_handlers;
@@ -54,6 +55,7 @@ async fn main() {
 
     let user_state = user_handlers::UserState::new(db_pool.clone());
     let provider_state = provider_handlers::ProviderState::new(db_pool.clone());
+    let service_state = service_handlers::ServiceState::new(db_pool.clone());
 
     // Auth routes
     let auth_router = Router::new()
@@ -104,12 +106,47 @@ async fn main() {
         )
         .with_state(provider_state.clone());
 
+    // Service routes
+    let service_router = Router::new()
+        .route("/api/v1/services", get(service_handlers::list_services))
+        .route(
+            "/api/v1/services/search",
+            get(service_handlers::search_services),
+        )
+        .route("/api/v1/services", post(service_handlers::create_service))
+        .route(
+            "/api/v1/services/:service_id",
+            get(service_handlers::get_service),
+        )
+        .route(
+            "/api/v1/services/:service_id",
+            put(service_handlers::update_service),
+        )
+        .route(
+            "/api/v1/services/:service_id",
+            delete(service_handlers::delete_service),
+        )
+        .route(
+            "/api/v1/services/:service_id/publish",
+            post(service_handlers::publish_service),
+        )
+        .route(
+            "/api/v1/services/:service_id/unpublish",
+            post(service_handlers::unpublish_service),
+        )
+        .route(
+            "/api/v1/providers/:provider_id/services",
+            get(service_handlers::get_provider_services),
+        )
+        .with_state(service_state.clone());
+
     // Merge all routers
     let app = Router::new()
         .route("/", get(|| async { "Hello, Esotheric!" }))
         .merge(auth_router)
         .merge(user_router)
-        .merge(provider_router);
+        .merge(provider_router)
+        .merge(service_router);
 
     let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();
 
@@ -128,6 +165,16 @@ async fn main() {
     println!("  - Update Provider: PUT /api/v1/providers/:provider_id");
     println!("  - Verify Provider: POST /api/v1/providers/:provider_id/verify");
     println!("  - Deactivate Provider: POST /api/v1/providers/:provider_id/deactivate");
+    println!("Service endpoints:");
+    println!("  - List Services: GET /api/v1/services");
+    println!("  - Search Services: GET /api/v1/services/search");
+    println!("  - Create Service: POST /api/v1/services");
+    println!("  - Get Service: GET /api/v1/services/:service_id");
+    println!("  - Update Service: PUT /api/v1/services/:service_id");
+    println!("  - Delete Service: DELETE /api/v1/services/:service_id");
+    println!("  - Publish Service: POST /api/v1/services/:service_id/publish");
+    println!("  - Unpublish Service: POST /api/v1/services/:service_id/unpublish");
+    println!("  - Get Provider Services: GET /api/v1/providers/:provider_id/services");
     println!("OAuth2 endpoints:");
     println!("  - Authorization: GET /oauth/authorize");
     println!("  - Token: POST /oauth/token");

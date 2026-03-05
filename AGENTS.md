@@ -228,5 +228,42 @@ Task 7: Users and provider profiles (COMPLETED):
 - Dependencies added:
   - users crate: bcrypt, jsonwebtoken, chrono, diesel (with features)
   - providers crate: same as users + dependency on users crate
-  
+  - services crate: same as providers + dependency on providers crate
+
 - Next: Task 8 (Services catalog & publishing)
+
+Task 8: Services catalog & publishing (COMPLETED):
+
+- Services module implementation:
+  - Created services crate with full CRUD operations
+  - Service linked to provider (not user) via provider_id foreign key
+  - Title, description, duration_minutes, price_cents, currency (BRL default)
+  - Tags stored as TEXT[] array for efficient filtering
+  - Metadata stored as JSONB for flexible fields
+  - is_published flag for draft/published states
+  
+- Database changes:
+  - Updated services table reference from users to providers in migration
+  - Schema updated to join services -> providers
+  
+- API endpoints:
+  - List services: GET /api/v1/services
+  - Search services: GET /api/v1/services/search
+  - Create service: POST /api/v1/services
+Update/Delete service  - Get/: /api/v1/services/:service_id
+  - Publish/Unpublish: POST /api/v1/services/:service_id/publish|unpublish
+  - Get provider services: GET /api/v1/providers/:provider_id/services
+  
+- Search/filter implementation:
+  - Filter by tag using PostgreSQL array containment
+  - Filter by price range (min_price, max_price)
+  - Filter by provider verified status (provider_verified_only)
+  - Uses inner_join with providers table for verification status
+  
+- Architectural decisions:
+  - Services linked to providers (one-to-many relationship)
+  - is_published separates draft from visible services
+  - search_services uses boxed queries for dynamic filtering
+  - Follows same patterns as providers crate for consistency
+  
+- Next: Task 9 (Bookings & appointment lifecycle)

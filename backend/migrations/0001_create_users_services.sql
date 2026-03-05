@@ -11,7 +11,7 @@ CREATE TABLE users (
 
 CREATE TABLE services (
   id CHAR(26) PRIMARY KEY,
-  provider_id CHAR(26) NOT NULL REFERENCES users(id),
+  provider_id CHAR(26) NOT NULL REFERENCES providers(id),
   title TEXT NOT NULL,
   description TEXT,
   duration_minutes INT NOT NULL,

@@ -57,6 +57,7 @@ table! {
     }
 }
 
+joinable!(services -> providers (provider_id));
 joinable!(services -> users (provider_id));
 joinable!(refresh_tokens -> users (user_id));
 joinable!(refresh_tokens -> oauth_clients (client_id));
