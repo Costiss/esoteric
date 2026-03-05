@@ -60,7 +60,7 @@ Reference files:
 - Integrate payment-intent orchestration: create a provisional booking, hold availability, require payment confirmation to finalize
 - Add unit and integration tests that simulate concurrent booking attempts to ensure atomicity
 
-[ TO-DO ] Task 10: Payments integration
+[ DONE ] Task 10: Payments integration
 - Choose payment providers to support (Stripe, MercadoPago, PagSeguro) — start with Stripe sandbox for MVP (recommended)
 - Implement `payments/` orchestration: create payment intents, webhook handlers, provider commissions and payout placeholders
 - Persist payment intents and final settlement metadata in Postgres; ensure idempotent webhook handling

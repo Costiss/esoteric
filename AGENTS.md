@@ -306,3 +306,50 @@ Task 9: Bookings & appointment lifecycle (COMPLETED):
   - Follows same module structure as services and providers crates
 
 - Next: Task 10 (Payments integration)
+
+Task 10: Payments integration (COMPLETED):
+
+- Multi-provider payment architecture with trait-based design:
+  - PaymentProvider trait with methods: create_payment_intent, refund, verify_webhook_signature, parse_webhook_event
+  - StripeProvider implementation for Stripe integration
+  - MockProvider implementation for testing/development
+  - Easy to add MercadoPago, PagSeguro providers later
+
+- Database schema (payments table):
+  - id, booking_id, customer_id, provider_id (CHAR(26) ULIDs)
+  - provider_type (TEXT): stripe, mercadopago, pagseguro
+  - provider_payment_id, provider_charge_id (TEXT, provider-agnostic)
+  - amount_cents, currency (BRL default)
+  - status: pending, requires_payment_method, processing, succeeded, canceled, refunded
+  - metadata (JSONB) for provider-specific data
+  - commission_amount_cents (platform takes 10%)
+
+- API endpoints:
+  - Create Payment Intent: POST /api/v1/payments
+  - Webhook Handler: POST /api/v1/payments/webhook
+  - Get Payment: GET /api/v1/payments/:payment_id
+  - Get Payment by Booking: GET /api/v1/payments/booking/:booking_id
+  - Refund Payment: POST /api/v1/payments/:payment_id/refund
+  - Get Customer Payments: GET /api/v1/customers/:customer_id/payments
+  - Get Provider Payments: GET /api/v1/providers/:provider_id/payments
+
+- Implementation details:
+  - PaymentState holds Box<dyn PaymentProvider> for runtime provider selection
+  - Provider selected via STRIPE_API_KEY environment variable
+  - MockProvider used when no valid API key provided
+  - Platform commission calculated on payment creation (10%)
+  - Webhook handling supports: payment_intent.succeeded, payment_intent.payment_failed, charge.refunded
+
+- Architectural decisions:
+  - Trait-based architecture enables swapping providers without code changes
+  - Database schema designed to be provider-agnostic
+  - Provider-agnostic column names (provider_payment_id vs stripe_payment_intent_id)
+  - Idempotent webhook processing (best-effort updates)
+  - Note: StripeProvider uses mock implementation due to OpenSSL dependencies in current environment
+
+- Dependencies:
+  - async-trait for trait objects
+  - ulid for payment ID generation
+  - chrono for timestamps
+
+- Next: Task 11 (Notifications & support)

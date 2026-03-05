@@ -10,6 +10,10 @@ use common::{
 };
 use diesel::r2d2::ConnectionManager;
 use diesel::PgConnection;
+use payments::handlers as payment_handlers;
+use payments::providers::{
+    mock::MockPaymentProvider, stripe::StripeProvider, PaymentProvider, PaymentProviderType,
+};
 use providers::handlers as provider_handlers;
 use services::handlers as service_handlers;
 use std::env;
@@ -58,6 +62,22 @@ async fn main() {
     let provider_state = provider_handlers::ProviderState::new(db_pool.clone());
     let service_state = service_handlers::ServiceState::new(db_pool.clone());
     let booking_state = booking_handlers::BookingState::new(db_pool.clone());
+
+    let payment_provider: Arc<dyn PaymentProvider> =
+        if let Ok(stripe_key) = env::var("STRIPE_API_KEY") {
+            if !stripe_key.is_empty() && stripe_key != "sk_test_placeholder" {
+                Arc::new(StripeProvider::new(stripe_key).expect("Failed to create Stripe provider"))
+            } else {
+                Arc::new(MockPaymentProvider::new(PaymentProviderType::Stripe))
+            }
+        } else {
+            Arc::new(MockPaymentProvider::new(PaymentProviderType::Stripe))
+        };
+
+    let payment_state = Arc::new(payment_handlers::PaymentState::new(
+        db_pool.clone(),
+        payment_provider,
+    ));
 
     // Auth routes
     let auth_router = Router::new()
@@ -184,6 +204,38 @@ async fn main() {
         )
         .with_state(booking_state.clone());
 
+    // Payment routes
+    let payment_router = Router::new()
+        .route(
+            "/api/v1/payments",
+            post(payment_handlers::create_payment_intent),
+        )
+        .route(
+            "/api/v1/payments/webhook",
+            post(payment_handlers::handle_webhook),
+        )
+        .route(
+            "/api/v1/payments/:payment_id",
+            get(payment_handlers::get_payment),
+        )
+        .route(
+            "/api/v1/payments/booking/:booking_id",
+            get(payment_handlers::get_payment_by_booking),
+        )
+        .route(
+            "/api/v1/payments/:payment_id/refund",
+            post(payment_handlers::refund_payment),
+        )
+        .route(
+            "/api/v1/customers/:customer_id/payments",
+            get(payment_handlers::get_customer_payments),
+        )
+        .route(
+            "/api/v1/providers/:provider_id/payments",
+            get(payment_handlers::get_provider_payments),
+        )
+        .with_state(payment_state.clone());
+
     // Merge all routers
     let app = Router::new()
         .route("/", get(|| async { "Hello, Esotheric!" }))
@@ -191,7 +243,8 @@ async fn main() {
         .merge(user_router)
         .merge(provider_router)
         .merge(service_router)
-        .merge(booking_router);
+        .merge(booking_router)
+        .merge(payment_router);
 
     let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();
 
@@ -237,6 +290,14 @@ async fn main() {
     println!("  - Get Provider Bookings: GET /api/v1/providers/:provider_id/bookings");
     println!("  - Get Service Bookings: GET /api/v1/services/:service_id/bookings");
     println!("  - Check Availability: GET /api/v1/providers/:provider_id/availability");
+    println!("Payment endpoints:");
+    println!("  - Create Payment Intent: POST /api/v1/payments");
+    println!("  - Webhook Handler: POST /api/v1/payments/webhook");
+    println!("  - Get Payment: GET /api/v1/payments/:payment_id");
+    println!("  - Get Payment by Booking: GET /api/v1/payments/booking/:booking_id");
+    println!("  - Refund Payment: POST /api/v1/payments/:payment_id/refund");
+    println!("  - Get Customer Payments: GET /api/v1/customers/:customer_id/payments");
+    println!("  - Get Provider Payments: GET /api/v1/providers/:provider_id/payments");
 
     axum::serve(listener, app).await.unwrap();
 }

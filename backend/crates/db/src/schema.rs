@@ -93,12 +93,38 @@ table! {
     }
 }
 
+table! {
+    payments (id) {
+        id -> Char,
+        booking_id -> Char,
+        customer_id -> Char,
+        provider_id -> Char,
+        provider_type -> Text,
+        provider_payment_id -> Nullable<Text>,
+        provider_charge_id -> Nullable<Text>,
+        amount_cents -> Integer,
+        currency -> Char,
+        status -> Text,
+        payment_method_id -> Nullable<Text>,
+        customer_email -> Nullable<Text>,
+        metadata -> Nullable<Jsonb>,
+        refunded_amount_cents -> Integer,
+        commission_amount_cents -> Integer,
+        paid_at -> Nullable<Timestamptz>,
+        created_at -> Timestamptz,
+        updated_at -> Timestamptz,
+    }
+}
+
 joinable!(services -> providers (provider_id));
 joinable!(refresh_tokens -> users (user_id));
 joinable!(refresh_tokens -> oauth_clients (client_id));
 joinable!(bookings -> services (service_id));
 joinable!(bookings -> users (customer_id));
 joinable!(bookings -> providers (provider_id));
+joinable!(payments -> bookings (booking_id));
+joinable!(payments -> users (customer_id));
+joinable!(payments -> providers (provider_id));
 
 allow_tables_to_appear_in_same_query!(
     users,
@@ -106,5 +132,6 @@ allow_tables_to_appear_in_same_query!(
     oauth_clients,
     refresh_tokens,
     providers,
-    bookings
+    bookings,
+    payments
 );
