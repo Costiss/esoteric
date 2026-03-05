@@ -103,7 +103,7 @@ Reference files:
 - Logout and token revocation flows implemented ✓
 - Auth state automatically redirects to login when not authenticated ✓
 
-[ TO-DO ] Task 14: Dockerization & local dev environment
+[ DONE ] Task 14: Dockerization & local dev environment
 - Add Dockerfiles for backend and mobile dev container examples (Expo dev inside container if desired)
 - Add docker-compose.dev with Postgres and a valkey-compatible cache (Redis or a valkey shim) for local development
 - Add `make` targets or npm scripts to simplify common tasks (start-db, start-backend, start-mobile)

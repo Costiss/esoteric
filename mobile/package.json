@@ -10,7 +10,14 @@
     "web": "expo start --web",
     "lint": "expo lint",
     "lint:biome": "biome check .",
-    "format:biome": "biome format --write ."
+    "format:biome": "biome format --write .",
+    "docker:build": "docker build -t esotheric-mobile:latest .",
+    "docker:dev": "docker-compose -f docker-compose.dev.yml up --build",
+    "docker:dev:stop": "docker-compose -f docker-compose.dev.yml down",
+    "prebuild": "expo prebuild",
+    "build:android": "expo run:android",
+    "build:ios": "expo run:ios",
+    "export": "expo export"
   },
   "dependencies": {
     "@expo/vector-icons": "^15.0.3",

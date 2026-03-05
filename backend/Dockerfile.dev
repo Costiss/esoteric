@@ -1,0 +1,30 @@
+# Development Dockerfile with hot reload
+FROM rust:1.82-bookworm
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    libpq-dev \
+    pkg-config \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install cargo-watch for hot reload
+RUN cargo install cargo-watch
+
+# Create app directory
+WORKDIR /app
+
+# Copy workspace files
+COPY Cargo.toml ./
+COPY Cargo.lock ./ 2>/dev/null || true
+COPY crates ./crates
+
+# Create cache directory for faster rebuilds
+RUN mkdir -p /root/.cargo
+
+# Build dependencies first (for caching)
+RUN mkdir -p crates/common crates/db crates/auth crates/users crates/providers crates/services crates/bookings payments notifications admin && \
+    cargo fetch
+
+# Default command runs the server with hot reload
+CMD ["cargo", "watch", "-x", "run", "--", "--host", "0.0.0.0"]

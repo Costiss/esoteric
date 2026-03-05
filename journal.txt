@@ -483,3 +483,37 @@ Notes/Next steps:
 - Task 12 marked as DONE in PLAN.md
 - Task 12 is now complete
 - Next: Start Task 14 (Testing and quality gates) or Task 15 (Dockerization)
+
+2026-03-05 (Task 14 completed - Dockerization & local dev environment):
+- Implemented backend Docker setup:
+  - Created backend/Dockerfile: Multi-stage production build with Rust 1.82
+  - Created backend/Dockerfile.dev: Development container with cargo-watch for hot reload
+  - Created backend/.dockerignore: Excludes unnecessary files from build context
+  - Created backend/docker-compose.dev.yml: Full local dev environment
+  - Created backend/Makefile with targets: build, run, dev, test, fmt, clippy, docker-build, docker-run, docker-dev, start-db, stop-db, migrate, setup-db, generate-keys
+
+- Implemented mobile Docker setup:
+  - Created mobile/Dockerfile: Node 20 + Expo CLI development container
+  - Created mobile/docker-compose.dev.yml: Mobile dev environment
+  - Created mobile/Makefile with targets: install, dev, web, android, ios, build, lint, format, docker-build, docker-dev
+
+- Implemented root docker-compose.yml:
+  - Orchestrates all services: db (PostgreSQL), valkey, backend, mobile
+  - Can run all services together with docker-compose up
+
+- Docker images use Bookworm (Debian 12) for consistency
+- PostgreSQL 16 with health checks
+- Valkey 8.0 with persistence (appendonly)
+- Backend mounts source code for hot reload via cargo-watch
+- Mobile mounts source code and node_modules for hot reload
+
+Reflections:
+- Multi-stage Docker builds optimize production image size
+- cargo-watch enables hot reload in development containers
+- docker-compose.dev.yml provides clean separation between dev and production configs
+- Makefiles simplify common development tasks
+- Root docker-compose.yml allows running full stack with one command
+
+Notes/Next steps:
+- Task 14 marked as DONE in PLAN.md
+- Next: Start Task 15 (Observability, metrics and security) or Task 16 (Migrations, seed data)

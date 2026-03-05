@@ -492,3 +492,40 @@ Frontend Mobile Architecture (Task 12 - IN PROGRESS):
   - Lazy loading of provider dashboard data
   - Optimized animations with native driver
   - Error boundaries to prevent app crashes
+
+Dockerization & Local Development (Task 14 - COMPLETED):
+
+- Backend Docker Setup:
+  - backend/Dockerfile: Multi-stage production build (Rust 1.82, Debian Bookworm)
+  - backend/Dockerfile.dev: Development container with cargo-watch for hot reload
+  - backend/.dockerignore: Excludes unnecessary files from build context
+  - backend/docker-compose.dev.yml: Full local dev environment with PostgreSQL 16, Valkey 8.0
+  - backend/Makefile: Common tasks (build, run, dev, test, fmt, clippy, docker-*, start-db, migrate, setup-db)
+
+- Mobile Docker Setup:
+  - mobile/Dockerfile: Node 20 + Expo CLI development container
+  - mobile/docker-compose.dev.yml: Mobile dev environment with ports 8081, 19000-19002
+  - mobile/Makefile: Common tasks (install, dev, web, android, ios, build, lint, format, docker-*)
+
+- Root docker-compose.yml:
+  - Orchestrates all services: db (PostgreSQL), valkey, backend, mobile
+  - Run full stack: docker-compose up
+  - Run backend only: docker-compose up backend
+  - Run mobile only: docker-compose up mobile
+
+- Docker Configuration:
+  - All images use Debian Bookworm for consistency
+  - PostgreSQL 16 with health checks
+  - Valkey 8.0 with AOF persistence
+  - Backend mounts source code with cargo-cache volume for faster rebuilds
+  - Mobile mounts source code and node_modules for hot reload
+
+- Development Workflow:
+  1. Start all services: docker-compose up --build
+  2. Or start just DB: cd backend && make start-db && make migrate
+  3. Run backend: cd backend && make dev
+  4. Run mobile: cd mobile && make dev
+
+- Production Deployment:
+  1. Build image: cd backend && make docker-build
+  2. Run container: make docker-run (requires external DB)
