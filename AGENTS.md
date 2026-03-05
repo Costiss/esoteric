@@ -192,3 +192,41 @@ OAuth2 Authorization Server Architecture (Task 6 - COMPLETED):
   - Token binding: Bind tokens to device/connection for additional security
 
 Task 6 is complete. Next: Task 7 (Users and provider profiles).
+
+Task 7: Users and provider profiles (COMPLETED):
+
+- Users module implementation:
+  - Created users crate with registration, login, profile CRUD
+  - Uses bcrypt for password hashing (10 rounds)
+  - JWT token generation for authentication (access + refresh tokens)
+  - Email uniqueness handled at application level (TEXT column instead of CITEXT)
+  - Password change requires current password verification
+  
+- Providers module implementation:
+  - Created providers crate with profile management
+  - Provider profile linked to user via user_id (one-to-one)
+  - Working hours stored as JSONB for flexibility
+  - Availability settings stored as JSONB
+  - is_verified flag for admin verification
+  - is_active flag for soft delete/deactivation
+  
+- Database schema:
+  - providers table: id (ULID), user_id (FK), display_name, bio, working_hours (JSONB), availability_settings (JSONB), is_verified, is_active, timestamps
+  - Changed users.email from CITEXT to TEXT for Diesel compatibility
+  
+- API endpoints:
+  - Users: POST /api/v1/users/register, POST /api/v1/users/login, GET/PUT /api/v1/users/:user_id, PUT /api/v1/users/:user_id/password
+  - Providers: GET/POST /api/v1/providers, GET/PUT /api/v1/providers/:provider_id, GET /api/v1/providers/user/:user_id, POST /api/v1/providers/:provider_id/verify, POST /api/v1/providers/:provider_id/deactivate
+  
+- Architectural decisions:
+  - Used bcrypt (not SHA256) for password hashing (more secure for passwords)
+  - JWT with HS256 for simple token generation in users crate
+  - Explicit column references in Diesel queries to avoid DSL conflicts
+  - Separate routers merged together for different state types
+  - Provider verification as admin endpoint (is_verified flag)
+
+- Dependencies added:
+  - users crate: bcrypt, jsonwebtoken, chrono, diesel (with features)
+  - providers crate: same as users + dependency on users crate
+  
+- Next: Task 8 (Services catalog & publishing)

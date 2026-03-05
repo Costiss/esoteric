@@ -195,3 +195,44 @@ Notes/Next steps:
 - Token introspection endpoint can be added if needed
 - Consider implementing refresh token rotation for enhanced security (future enhancement)
 - Ready to start Task 7: Users and provider profiles
+
+2026-03-04 (Task 7 completed - Users and provider profiles):
+- Implemented users crate with:
+  - User registration with email/password
+  - Login with JWT token generation (access + refresh tokens)
+  - Profile CRUD operations (get, update)
+  - Password change with current password verification
+  - bcrypt for password hashing
+  - jsonwebtoken for JWT token generation
+  
+- Implemented providers crate with:
+  - Provider profile creation (linked to user_id)
+  - Working hours storage (JSONB)
+  - Availability settings (JSONB)
+  - Profile CRUD operations
+  - Provider verification (admin)
+  - Provider deactivation
+  
+- Database changes:
+  - Created migration 0003 for providers table
+  - Updated schema.rs to include providers table
+  - Changed email column from CITEXT to TEXT (Diesel compatibility)
+  - providers table has: id, user_id, display_name, bio, working_hours, availability_settings, is_verified, is_active
+  
+- Server integration:
+  - Added users routes: /api/v1/users/register, /api/v1/users/login, /api/v1/users/:user_id
+  - Added providers routes: /api/v1/providers (list, create), /api/v1/providers/:provider_id
+  - Used merged routers approach for different state types
+  - Added database pool initialization to server.rs
+  
+Reflections:
+- Password hashing with bcrypt provides secure password storage
+- JWT tokens generated in users crate for simple authentication
+- Diesel schema DSL conflicts with local variable names (fixed with explicit column references)
+- CITEXT changed to TEXT for Diesel compatibility (case-insensitive handled in app)
+- Separate routers with merged() approach works well for different state types
+
+Notes/Next steps:
+- Task 7 marked as DONE in PLAN.md
+- Ready to start Task 8: Services catalog & publishing
+- Admin APIs for provider verification included in providers crate
