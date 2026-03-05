@@ -1,7 +1,7 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
 import { useRouter, useSegments } from 'expo-router';
 import * as SecureStore from 'expo-secure-store';
-import { apiClient } from '@/lib/api-client';
+import { apiClient, type ProviderProfile } from '@/lib/api-client';
 
 interface User {
   id: string;
@@ -18,12 +18,15 @@ interface AuthTokens {
 
 interface AuthContextType {
   user: User | null;
+  providerProfile: ProviderProfile | null;
   isLoading: boolean;
   isAuthenticated: boolean;
+  isProvider: boolean;
   login: (email: string, password: string) => Promise<void>;
   register: (email: string, password: string, fullName: string) => Promise<void>;
   logout: () => Promise<void>;
   refreshAccessToken: () => Promise<boolean>;
+  loadProviderProfile: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -32,9 +35,11 @@ const ACCESS_TOKEN_KEY = 'access_token';
 const REFRESH_TOKEN_KEY = 'refresh_token';
 const EXPIRES_AT_KEY = 'expires_at';
 const USER_KEY = 'user_data';
+const PROVIDER_KEY = 'provider_data';
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
+  const [providerProfile, setProviderProfile] = useState<ProviderProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
   const segments = useSegments();
@@ -63,11 +68,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const loadStoredAuth = async () => {
     try {
-      const [accessToken, refreshToken, expiresAtStr, userData] = await Promise.all([
+      const [accessToken, refreshToken, expiresAtStr, userData, providerData] = await Promise.all([
         SecureStore.getItemAsync(ACCESS_TOKEN_KEY),
         SecureStore.getItemAsync(REFRESH_TOKEN_KEY),
         SecureStore.getItemAsync(EXPIRES_AT_KEY),
         SecureStore.getItemAsync(USER_KEY),
+        SecureStore.getItemAsync(PROVIDER_KEY),
       ]);
 
       if (accessToken && refreshToken && expiresAtStr) {
@@ -82,12 +88,29 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           if (userData) {
             setUser(JSON.parse(userData));
           }
+          if (providerData) {
+            setProviderProfile(JSON.parse(providerData));
+          }
         }
       }
     } catch (error) {
       console.error('Failed to load auth:', error);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const loadProviderProfile = async () => {
+    if (!user) return;
+    
+    try {
+      const profile = await apiClient.getProviderByUserId(user.id);
+      setProviderProfile(profile);
+      await SecureStore.setItemAsync(PROVIDER_KEY, JSON.stringify(profile));
+    } catch (_error) {
+      // User is not a provider, that's ok
+      setProviderProfile(null);
+      await SecureStore.deleteItemAsync(PROVIDER_KEY);
     }
   };
 
@@ -113,8 +136,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         SecureStore.deleteItemAsync(REFRESH_TOKEN_KEY),
         SecureStore.deleteItemAsync(EXPIRES_AT_KEY),
         SecureStore.deleteItemAsync(USER_KEY),
+        SecureStore.deleteItemAsync(PROVIDER_KEY),
       ]);
       setUser(null);
+      setProviderProfile(null);
     } catch (error) {
       console.error('Failed to clear auth:', error);
     }
@@ -214,12 +239,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     <AuthContext.Provider
       value={{
         user,
+        providerProfile,
         isLoading,
         isAuthenticated: !!user,
+        isProvider: !!providerProfile,
         login,
         register,
         logout,
         refreshAccessToken,
+        loadProviderProfile,
       }}
     >
       {children}

@@ -110,6 +110,32 @@ async function apiRequest<T>(
   return data;
 }
 
+// Provider types
+interface ProviderProfile extends Provider {
+  user_id: string;
+}
+
+interface CreateServiceData {
+  title: string;
+  description: string;
+  duration_minutes: number;
+  price_cents: number;
+  currency?: string;
+  tags?: string[];
+  metadata?: Record<string, unknown>;
+}
+
+interface UpdateServiceData extends Partial<CreateServiceData> {
+  is_published?: boolean;
+}
+
+interface ProviderStats {
+  total_bookings: number;
+  pending_confirmations: number;
+  earnings_this_month_cents: number;
+  active_services: number;
+}
+
 export const apiClient = {
   // Auth
   login: (email: string, password: string): Promise<LoginResponse> =>
@@ -149,6 +175,10 @@ export const apiClient = {
       body: JSON.stringify(data),
     }),
 
+  // Provider Profile (for checking if user is a provider)
+  getProviderByUserId: (userId: string): Promise<ProviderProfile> =>
+    apiRequest<ProviderProfile>(`/api/v1/providers/user/${userId}`),
+
   // Services
   listServices: (params?: { page?: number; per_page?: number; published_only?: boolean }): Promise<{ services: Service[]; total: number }> =>
     apiRequest(`/api/v1/services?${new URLSearchParams(params as Record<string, string>).toString()}`),
@@ -166,6 +196,33 @@ export const apiClient = {
   getService: (serviceId: string): Promise<Service> =>
     apiRequest<Service>(`/api/v1/services/${serviceId}`),
 
+  createService: (data: CreateServiceData): Promise<Service> =>
+    apiRequest<Service>('/api/v1/services', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+
+  updateService: (serviceId: string, data: UpdateServiceData): Promise<Service> =>
+    apiRequest<Service>(`/api/v1/services/${serviceId}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    }),
+
+  deleteService: (serviceId: string): Promise<void> =>
+    apiRequest<void>(`/api/v1/services/${serviceId}`, {
+      method: 'DELETE',
+    }),
+
+  publishService: (serviceId: string): Promise<Service> =>
+    apiRequest<Service>(`/api/v1/services/${serviceId}/publish`, {
+      method: 'POST',
+    }),
+
+  unpublishService: (serviceId: string): Promise<Service> =>
+    apiRequest<Service>(`/api/v1/services/${serviceId}/unpublish`, {
+      method: 'POST',
+    }),
+
   // Providers
   listProviders: (params?: { page?: number; per_page?: number; verified_only?: boolean }): Promise<{ providers: Provider[]; total: number }> =>
     apiRequest(`/api/v1/providers?${new URLSearchParams(params as Record<string, string>).toString()}`),
@@ -175,6 +232,9 @@ export const apiClient = {
 
   getProviderServices: (providerId: string): Promise<Service[]> =>
     apiRequest<Service[]>(`/api/v1/providers/${providerId}/services`),
+
+  getProviderStats: (providerId: string): Promise<ProviderStats> =>
+    apiRequest<ProviderStats>(`/api/v1/providers/${providerId}/stats`),
 
   // Bookings
   createBooking: (data: {
@@ -198,6 +258,16 @@ export const apiClient = {
       method: 'POST',
     }),
 
+  startBooking: (bookingId: string): Promise<Booking> =>
+    apiRequest<Booking>(`/api/v1/bookings/${bookingId}/start`, {
+      method: 'POST',
+    }),
+
+  completeBooking: (bookingId: string): Promise<Booking> =>
+    apiRequest<Booking>(`/api/v1/bookings/${bookingId}/complete`, {
+      method: 'POST',
+    }),
+
   cancelBooking: (bookingId: string, reason?: string): Promise<Booking> =>
     apiRequest<Booking>(`/api/v1/bookings/${bookingId}/cancel`, {
       method: 'POST',
@@ -214,4 +284,4 @@ export const apiClient = {
     apiRequest(`/api/v1/providers/${providerId}/availability?start_ts=${startTs}&end_ts=${endTs}`),
 };
 
-export type { User, Service, Provider, Booking, LoginResponse, RegisterResponse };
+export type { User, Service, Provider, Booking, LoginResponse, RegisterResponse, ProviderProfile, ProviderStats, CreateServiceData, UpdateServiceData };

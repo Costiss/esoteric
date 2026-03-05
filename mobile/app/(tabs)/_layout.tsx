@@ -1,9 +1,11 @@
 import { Tabs } from 'expo-router';
 import { useTheme } from 'tamagui';
-import { Home, Search, Calendar, User } from '@tamagui/lucide-icons';
+import { Home, Search, Calendar, User, Briefcase } from '@tamagui/lucide-icons';
+import { useAuth } from '@/contexts/auth-context';
 
 export default function TabLayout() {
   const theme = useTheme();
+  const { isProvider } = useAuth();
 
   return (
     <Tabs
@@ -30,6 +32,15 @@ export default function TabLayout() {
           tabBarIcon: ({ color }) => <Search size={24} color={color} />,
         }}
       />
+      {isProvider && (
+        <Tabs.Screen
+          name="provider-dashboard"
+          options={{
+            title: 'Dashboard',
+            tabBarIcon: ({ color }) => <Briefcase size={24} color={color} />,
+          }}
+        />
+      )}
       <Tabs.Screen
         name="bookings"
         options={{

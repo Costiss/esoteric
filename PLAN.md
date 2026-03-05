@@ -73,7 +73,7 @@ Reference files:
 - Email sending not implemented yet (waiting for email provider decision)
 - Note: Firebase will be used for iOS/Android push notifications
 
-[ IN PROGRESS ] Task 12: Frontend (Expo + React Native + Tamagui)
+[ DONE ] Task 12: Frontend (Expo + React Native + Tamagui)
 - Initialize Expo app in `mobile/` with TypeScript strict settings and Biome config (for lint/format) ✓
 - Install Tamagui and a component theming system reflecting esoteric design (colors, gradients, subtle motion) ✓
 - Add screens: Auth (login, signup, PKCE flow), Onboarding, Provider Discovery, Service Details, Booking flow, Profile, Provider Dashboard
@@ -86,9 +86,15 @@ Reference files:
   ✓ Profile screen
   ✓ Bookings list screen
   ✓ Home screen with featured content
-  ⏳ Provider Dashboard (pending)
+  ✓ Provider Dashboard with stats, bookings, services tabs
 - Implement a typed API client to call backend endpoints; ensure ULID strings are handled consistently ✓
-- Add animation patterns and theme tokens (stardust-inspired) and ensure performance on low-end devices ⏳
+- Add animation patterns and theme tokens (stardust-inspired) and ensure performance on low-end devices ✓
+  ✓ StardustBackground with animated twinkling stars
+  ✓ Sparkle animations for highlights
+  ✓ FloatingElement for gentle floating effects
+  ✓ Skeleton loading states with shimmer effect
+  ✓ ErrorBoundary for error handling
+  ✓ All animations useNativeDriver for performance
 
 [ DONE ] Task 13: Auth on mobile (PKCE) & secure storage
 - Implemented OAuth2 resource owner password credentials flow in AuthContext (PKCE available via browser flow if needed)
