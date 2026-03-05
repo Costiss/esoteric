@@ -3,7 +3,7 @@ use diesel::prelude::*;
 table! {
     users (id) {
         id -> Char,
-        email -> Citext,
+        email -> Text,
         password_hash -> Nullable<Text>,
         role -> Text,
         is_active -> Bool,
@@ -60,4 +60,20 @@ table! {
 joinable!(services -> users (provider_id));
 joinable!(refresh_tokens -> users (user_id));
 joinable!(refresh_tokens -> oauth_clients (client_id));
-allow_tables_to_appear_in_same_query!(users, services, oauth_clients, refresh_tokens);
+
+table! {
+    providers (id) {
+        id -> Char,
+        user_id -> Char,
+        display_name -> Text,
+        bio -> Nullable<Text>,
+        working_hours -> Nullable<Jsonb>,
+        availability_settings -> Nullable<Jsonb>,
+        is_verified -> Bool,
+        is_active -> Bool,
+        created_at -> Timestamptz,
+        updated_at -> Timestamptz,
+    }
+}
+
+allow_tables_to_appear_in_same_query!(users, services, oauth_clients, refresh_tokens, providers);

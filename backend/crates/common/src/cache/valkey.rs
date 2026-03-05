@@ -35,9 +35,8 @@ pub struct ValkeyCache {
 impl ValkeyCache {
     /// Create a new ValkeyCache with the given configuration.
     pub fn new(config: ValkeyConfig) -> Result<Self, CacheError> {
-        let client = Client::open(config.url).map_err(|e| {
-            CacheError::Connection(format!("Failed to create client: {}", e))
-        })?;
+        let client = Client::open(config.url)
+            .map_err(|e| CacheError::Connection(format!("Failed to create client: {}", e)))?;
 
         Ok(Self { client })
     }

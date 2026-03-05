@@ -111,7 +111,7 @@ mod tests {
     #[tokio::test]
     async fn test_ttl_expiration() {
         pause();
-        
+
         let cache = MockCache::new();
         cache
             .set("key1", "value1", Duration::from_secs(10))
@@ -155,7 +155,7 @@ mod tests {
     #[tokio::test]
     async fn test_get_and_delete_expired_key() {
         pause();
-        
+
         let cache = MockCache::new();
         cache
             .set("key1", "value1", Duration::from_secs(10))

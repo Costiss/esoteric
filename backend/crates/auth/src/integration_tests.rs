@@ -1,5 +1,5 @@
 //! Integration tests for OAuth2 authorization server
-//! 
+//!
 //! These tests use MockCache to test the full authorization code flow
 //! without requiring external dependencies.
 
@@ -49,7 +49,11 @@ mod tests {
         let cache_key = format!("code:{}", code);
         auth_state
             .cache
-            .set(&cache_key, &auth_code_data.to_json().unwrap(), Duration::from_secs(600))
+            .set(
+                &cache_key,
+                &auth_code_data.to_json().unwrap(),
+                Duration::from_secs(600),
+            )
             .await
             .unwrap();
 
@@ -79,7 +83,10 @@ mod tests {
 
         // Second get should fail (code already used)
         let second_attempt = auth_state.cache.get(&cache_key).await.unwrap();
-        assert!(second_attempt.is_none(), "Code should be deleted after consumption");
+        assert!(
+            second_attempt.is_none(),
+            "Code should be deleted after consumption"
+        );
     }
 
     #[tokio::test]
@@ -101,7 +108,11 @@ mod tests {
         let cache_key = format!("code:{}", code);
         auth_state
             .cache
-            .set(&cache_key, &auth_code_data.to_json().unwrap(), Duration::from_secs(1))
+            .set(
+                &cache_key,
+                &auth_code_data.to_json().unwrap(),
+                Duration::from_secs(1),
+            )
             .await
             .unwrap();
 
@@ -140,7 +151,11 @@ mod tests {
         let cache_key = format!("code:{}", code);
         auth_state
             .cache
-            .set(&cache_key, &auth_code_data.to_json().unwrap(), Duration::from_secs(600))
+            .set(
+                &cache_key,
+                &auth_code_data.to_json().unwrap(),
+                Duration::from_secs(600),
+            )
             .await
             .unwrap();
 
@@ -159,11 +174,10 @@ mod tests {
         assert_eq!(stored_data.code_challenge_method.as_deref(), Some("S256"));
 
         let stored_challenge = stored_data.code_challenge.unwrap();
-        assert!(verify_pkce_challenge(
-            code_verifier,
-            &stored_challenge,
-            &PkceChallengeMethod::S256
-        ), "PKCE verification should succeed");
+        assert!(
+            verify_pkce_challenge(code_verifier, &stored_challenge, &PkceChallengeMethod::S256),
+            "PKCE verification should succeed"
+        );
 
         // Step 4: Generate access token
         let access_token = auth_state
@@ -212,7 +226,11 @@ mod tests {
         let cache_key = format!("code:{}", code);
         auth_state
             .cache
-            .set(&cache_key, &auth_code_data.to_json().unwrap(), Duration::from_secs(600))
+            .set(
+                &cache_key,
+                &auth_code_data.to_json().unwrap(),
+                Duration::from_secs(600),
+            )
             .await
             .unwrap();
 
@@ -230,7 +248,11 @@ mod tests {
         // Try to verify with wrong verifier
         let wrong_verifier = "wrong_verifier";
         assert!(
-            !verify_pkce_challenge(wrong_verifier, &stored_challenge, &PkceChallengeMethod::S256),
+            !verify_pkce_challenge(
+                wrong_verifier,
+                &stored_challenge,
+                &PkceChallengeMethod::S256
+            ),
             "PKCE verification should fail with wrong verifier"
         );
     }
@@ -272,7 +294,11 @@ mod tests {
         let cache_key = format!("code:{}", code);
         auth_state
             .cache
-            .set(&cache_key, &auth_code_data.to_json().unwrap(), Duration::from_secs(600))
+            .set(
+                &cache_key,
+                &auth_code_data.to_json().unwrap(),
+                Duration::from_secs(600),
+            )
             .await
             .unwrap();
 

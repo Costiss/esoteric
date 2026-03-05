@@ -44,7 +44,7 @@ Reference files:
 - Implemented token revocation endpoint with database updates
 - All OAuth2 flows functional: authorization_code, refresh_token, revocation
 
-[ TO-DO ] Task 7: Users and provider profiles
+[ DONE ] Task 7: Users and provider profiles
 - Implement `users/` module: registration, email uniqueness (CITEXT), password hashing, profile updates
 - Implement `providers/` module: create provider profile, list services, working hours and availability metadata
 - Add admin APIs for provider verification and moderation

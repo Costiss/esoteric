@@ -8,7 +8,7 @@ use serde::Deserialize;
 use std::sync::Arc;
 use std::time::Duration;
 
-use crate::models::{ErrorResponse};
+use crate::models::ErrorResponse;
 use crate::AuthState;
 
 #[derive(Debug, Deserialize)]
@@ -43,7 +43,7 @@ pub async fn authorize(
         .unwrap_or_default();
 
     let code = common::ulid_new();
-    
+
     let auth_code_data = crate::models::AuthorizationCodeData {
         user_id: "temp_user_id".to_string(),
         client_id: params.client_id.clone(),

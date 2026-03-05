@@ -1,18 +1,18 @@
 //! Authentication crate - OAuth2 authorization server implementation
 
-pub mod jwt;
-pub mod pkce;
-pub mod models;
-pub mod handlers;
 pub mod db_models;
+pub mod handlers;
+pub mod jwt;
+pub mod models;
+pub mod pkce;
 
 #[cfg(test)]
 mod integration_tests;
 
-pub use jwt::{JwtService, JwtServiceError, AccessTokenClaims};
-pub use pkce::{verify_pkce_challenge, PkceChallengeMethod};
-pub use models::*;
 pub use db_models::*;
+pub use jwt::{AccessTokenClaims, JwtService, JwtServiceError};
+pub use models::*;
+pub use pkce::{verify_pkce_challenge, PkceChallengeMethod};
 
 use common::cache::Cache;
 use diesel::r2d2::{ConnectionManager, Pool};
@@ -29,8 +29,8 @@ pub struct AuthState {
 
 impl AuthState {
     pub fn new(jwt_service: JwtService, cache: Arc<dyn Cache>) -> Self {
-        Self { 
-            jwt_service, 
+        Self {
+            jwt_service,
             cache,
             db_pool: None,
         }

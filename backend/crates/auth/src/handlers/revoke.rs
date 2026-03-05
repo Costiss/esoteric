@@ -1,19 +1,15 @@
-use axum::{
-    extract::State,
-    http::StatusCode,
-    Json,
-};
+use axum::{extract::State, http::StatusCode, Json};
 use std::sync::Arc;
 
-use crate::models::{RevokeRequest, ErrorResponse};
 use crate::db_models::revoke_refresh_token;
+use crate::models::{ErrorResponse, RevokeRequest};
 use crate::AuthState;
 
 pub async fn revoke(
     State(auth_state): State<Arc<AuthState>>,
     Json(request): Json<RevokeRequest>,
 ) -> Result<StatusCode, (StatusCode, Json<ErrorResponse>)> {
-    // If no database pool is available, return success (as per OAuth2 spec, 
+    // If no database pool is available, return success (as per OAuth2 spec,
     // revocation is best-effort and shouldn't fail)
     let pool = match &auth_state.db_pool {
         Some(pool) => pool,

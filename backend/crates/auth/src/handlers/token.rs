@@ -1,13 +1,9 @@
-use axum::{
-    extract::State,
-    http::StatusCode,
-    Json,
-};
+use axum::{extract::State, http::StatusCode, Json};
 use std::sync::Arc;
 
-use crate::models::{TokenRequest, TokenResponse, ErrorResponse};
+use crate::db_models::{create_refresh_token, get_token_scopes, validate_refresh_token};
+use crate::models::{ErrorResponse, TokenRequest, TokenResponse};
 use crate::pkce::{verify_pkce_challenge, PkceChallengeMethod};
-use crate::db_models::{create_refresh_token, validate_refresh_token, get_token_scopes};
 use crate::AuthState;
 
 pub async fn token(
@@ -21,7 +17,10 @@ pub async fn token(
             StatusCode::BAD_REQUEST,
             Json(ErrorResponse {
                 error: "unsupported_grant_type".to_string(),
-                error_description: Some("Only 'authorization_code' and 'refresh_token' grant types are supported".to_string()),
+                error_description: Some(
+                    "Only 'authorization_code' and 'refresh_token' grant types are supported"
+                        .to_string(),
+                ),
             }),
         )),
     }
@@ -42,7 +41,7 @@ async fn handle_authorization_code(
     })?;
 
     let cache_key = format!("code:{}", code);
-    
+
     let auth_code_json = auth_state
         .cache
         .get_and_delete(&cache_key)
@@ -66,8 +65,8 @@ async fn handle_authorization_code(
             )
         })?;
 
-    let auth_code_data = crate::models::AuthorizationCodeData::from_json(&auth_code_json)
-        .map_err(|_| {
+    let auth_code_data =
+        crate::models::AuthorizationCodeData::from_json(&auth_code_json).map_err(|_| {
             (
                 StatusCode::INTERNAL_SERVER_ERROR,
                 Json(ErrorResponse {
@@ -87,8 +86,9 @@ async fn handle_authorization_code(
         ));
     }
 
-    if let (Some(code_challenge), Some(code_verifier)) = 
-        (auth_code_data.code_challenge, request.code_verifier) {
+    if let (Some(code_challenge), Some(code_verifier)) =
+        (auth_code_data.code_challenge, request.code_verifier)
+    {
         let method = auth_code_data
             .code_challenge_method
             .as_ref()
@@ -196,19 +196,16 @@ async fn handle_refresh_token(
         )
     })?;
 
-    let stored_token = validate_refresh_token(
-        &mut conn,
-        &raw_refresh_token,
-        &request.client_id,
-    ).map_err(|e| {
-        (
-            StatusCode::INTERNAL_SERVER_ERROR,
-            Json(ErrorResponse {
-                error: "server_error".to_string(),
-                error_description: Some(format!("Database error: {}", e)),
-            }),
-        )
-    })?;
+    let stored_token = validate_refresh_token(&mut conn, &raw_refresh_token, &request.client_id)
+        .map_err(|e| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(ErrorResponse {
+                    error: "server_error".to_string(),
+                    error_description: Some(format!("Database error: {}", e)),
+                }),
+            )
+        })?;
 
     let stored_token = stored_token.ok_or_else(|| {
         (
