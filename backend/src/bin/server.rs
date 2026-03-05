@@ -10,6 +10,8 @@ use common::{
 };
 use diesel::r2d2::ConnectionManager;
 use diesel::PgConnection;
+use notifications::handlers as notification_handlers;
+use notifications::fcm::FcmConfig;
 use payments::handlers as payment_handlers;
 use payments::providers::{
     mock::MockPaymentProvider, stripe::StripeProvider, PaymentProvider, PaymentProviderType,
@@ -78,6 +80,19 @@ async fn main() {
         db_pool.clone(),
         payment_provider,
     ));
+
+    let notification_state = if let Ok(fcm_key) = env::var("FCM_SERVER_KEY") {
+        if !fcm_key.is_empty() {
+            let fcm_config = FcmConfig {
+                server_key: fcm_key,
+            };
+            notification_handlers::NotificationState::with_fcm(db_pool.clone(), fcm_config)
+        } else {
+            notification_handlers::NotificationState::new(db_pool.clone())
+        }
+    } else {
+        notification_handlers::NotificationState::new(db_pool.clone())
+    };
 
     // Auth routes
     let auth_router = Router::new()
@@ -236,6 +251,10 @@ async fn main() {
         )
         .with_state(payment_state.clone());
 
+    // Notification routes
+    let notification_router = notification_handlers::router()
+        .with_state(Arc::new(notification_state));
+
     // Merge all routers
     let app = Router::new()
         .route("/", get(|| async { "Hello, Esotheric!" }))
@@ -244,7 +263,8 @@ async fn main() {
         .merge(provider_router)
         .merge(service_router)
         .merge(booking_router)
-        .merge(payment_router);
+        .merge(payment_router)
+        .merge(notification_router);
 
     let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();
 
@@ -298,6 +318,14 @@ async fn main() {
     println!("  - Refund Payment: POST /api/v1/payments/:payment_id/refund");
     println!("  - Get Customer Payments: GET /api/v1/customers/:customer_id/payments");
     println!("  - Get Provider Payments: GET /api/v1/providers/:provider_id/payments");
+    println!("Notification endpoints:");
+    println!("  - Register Push Token: POST /api/v1/users/:user_id/push-tokens");
+    println!("  - Unregister Push Token: DELETE /api/v1/users/:user_id/push-tokens/:token");
+    println!("  - Get Push Tokens: GET /api/v1/users/:user_id/push-tokens");
+    println!("  - Create Support Ticket: POST /api/v1/support/tickets");
+    println!("  - Get Support Ticket: GET /api/v1/support/tickets/:ticket_id");
+    println!("  - Add Support Message: POST /api/v1/support/tickets/:ticket_id/messages");
+    println!("  - Get Support Messages: GET /api/v1/support/tickets/:ticket_id/messages");
 
     axum::serve(listener, app).await.unwrap();
 }

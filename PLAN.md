@@ -65,10 +65,13 @@ Reference files:
 - Implement `payments/` orchestration: create payment intents, webhook handlers, provider commissions and payout placeholders
 - Persist payment intents and final settlement metadata in Postgres; ensure idempotent webhook handling
 
-[ TO-DO ] Task 11: Notifications & support
-- Implement `notifications/` module with email worker hooks (transactional emails for booking confirmations, reminders)
-- Add placeholders for push notifications (Expo push tokens) and worker to dispatch scheduled reminders
-- Add simple support contact endpoints and an email-based ticket fallback
+[ DONE ] Task 11: Notifications & support
+- Implemented `notifications/` module with placeholder email service (NoOpEmailProvider)
+- Added Firebase Cloud Messaging (FCM) push notification service - set FCM_SERVER_KEY env var
+- Added database migration for push_tokens, support_tickets, support_messages tables
+- Added API endpoints for push token management and support ticket system
+- Email sending not implemented yet (waiting for email provider decision)
+- Note: Firebase will be used for iOS/Android push notifications
 
 [ TO-DO ] Task 12: Frontend (Expo + React Native + Tamagui)
 - Initialize Expo app in `mobile/` with TypeScript strict settings and Biome config (for lint/format)

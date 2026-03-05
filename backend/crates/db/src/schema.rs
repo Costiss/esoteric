@@ -116,6 +116,48 @@ table! {
     }
 }
 
+table! {
+    push_tokens (id) {
+        id -> Char,
+        user_id -> Char,
+        token -> Text,
+        device_type -> Text,
+        device_id -> Nullable<Text>,
+        app_version -> Nullable<Text>,
+        is_active -> Bool,
+        last_used_at -> Nullable<Timestamptz>,
+        created_at -> Timestamptz,
+        updated_at -> Timestamptz,
+    }
+}
+
+table! {
+    support_tickets (id) {
+        id -> Char,
+        user_id -> Nullable<Char>,
+        subject -> Text,
+        description -> Text,
+        status -> Text,
+        priority -> Text,
+        category -> Text,
+        email -> Nullable<Text>,
+        resolved_at -> Nullable<Timestamptz>,
+        created_at -> Timestamptz,
+        updated_at -> Timestamptz,
+    }
+}
+
+table! {
+    support_messages (id) {
+        id -> Char,
+        ticket_id -> Char,
+        user_id -> Nullable<Char>,
+        message -> Text,
+        is_from_customer -> Bool,
+        created_at -> Timestamptz,
+    }
+}
+
 joinable!(services -> providers (provider_id));
 joinable!(refresh_tokens -> users (user_id));
 joinable!(refresh_tokens -> oauth_clients (client_id));
@@ -125,6 +167,10 @@ joinable!(bookings -> providers (provider_id));
 joinable!(payments -> bookings (booking_id));
 joinable!(payments -> users (customer_id));
 joinable!(payments -> providers (provider_id));
+joinable!(push_tokens -> users (user_id));
+joinable!(support_tickets -> users (user_id));
+joinable!(support_messages -> support_tickets (ticket_id));
+joinable!(support_messages -> users (user_id));
 
 allow_tables_to_appear_in_same_query!(
     users,
@@ -133,5 +179,8 @@ allow_tables_to_appear_in_same_query!(
     refresh_tokens,
     providers,
     bookings,
-    payments
+    payments,
+    push_tokens,
+    support_tickets,
+    support_messages
 );

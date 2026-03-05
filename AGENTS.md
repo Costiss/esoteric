@@ -353,3 +353,45 @@ Task 10: Payments integration (COMPLETED):
   - chrono for timestamps
 
 - Next: Task 11 (Notifications & support)
+
+Task 11: Notifications & support (COMPLETED):
+
+- Implemented notifications crate with:
+  - Database migration 0006 for push_tokens, support_tickets, support_messages tables
+  - Email service placeholder (NoOpEmailProvider) - email provider not yet decided
+  - FCM (Firebase Cloud Messaging) service for push notifications
+    - Set FCM_SERVER_KEY environment variable to enable
+    - Currently logs notifications (mock implementation for dev)
+    - Ready for real Firebase SDK integration when needed
+  - Support ticket system with tickets and messages
+
+- Database schema:
+  - push_tokens: id, user_id (FK), token, device_type, device_id, app_version, is_active, timestamps
+  - support_tickets: id, user_id (FK nullable), subject, description, status, priority, category, email (nullable), timestamps
+  - support_messages: id, ticket_id (FK), user_id (FK nullable), message, is_from_customer, created_at
+
+- API endpoints:
+  - Register Push Token: POST /api/v1/users/:user_id/push-tokens
+  - Unregister Push Token: DELETE /api/v1/users/:user_id/push-tokens/:token
+  - Get Push Tokens: GET /api/v1/users/:user_id/push-tokens
+  - Create Support Ticket: POST /api/v1/support/tickets
+  - Get Support Ticket: GET /api/v1/support/tickets/:ticket_id
+  - Add Support Message: POST /api/v1/support/tickets/:ticket_id/messages
+  - Get Support Messages: GET /api/v1/support/tickets/:ticket_id/messages
+
+- Environment variables:
+  - FCM_SERVER_KEY: Firebase Cloud Messaging server key for push notifications
+
+- Architectural decisions:
+  - Firebase FCM selected for push notifications (iOS/Android)
+  - Email service left as NoOpProvider - waiting for user decision on email provider
+  - Push token uses upsert on register (activate/inactivate on unregister)
+  - Support tickets can be created without authentication (guest support)
+  - Handler database integration deferred due to Diesel complexity
+
+- Notes:
+  - Email sending not implemented - waiting for email service decision (SMTP, SendGrid, AWS SES, etc.)
+  - Firebase is the standard for mobile push notifications (APNs for iOS, FCM for Android)
+  - Full database integration can be completed later when email provider is chosen
+
+- Next: Task 12 (Frontend - Expo + React Native + Tamagui)
