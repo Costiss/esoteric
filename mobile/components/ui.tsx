@@ -356,8 +356,8 @@ export function MysticalButton({
 
   const sizeStyle = SIZE_STYLES[size];
 
-  let bgColor = C.primary;
-  let textColor = C.primaryFg;
+  let bgColor: string = C.primary;
+  let textColor: string = C.primaryFg;
   let borderColor = 'transparent';
   let borderWidth = 0;
 

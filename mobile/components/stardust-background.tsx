@@ -1,8 +1,5 @@
-import { useEffect, useRef } from 'react';
-import { Animated, Dimensions, StyleSheet, View } from 'react-native';
-
-const { width, height } = Dimensions.get('window');
-const STAR_COUNT = Math.floor((width * height) / 8000);
+import { useEffect, useRef, useState } from 'react';
+import { Animated, StyleSheet, View } from 'react-native';
 
 interface Star {
   x: number;
@@ -21,25 +18,35 @@ function randomColor(): string {
   return 'rgba(255,200,220,'; // pink-ish
 }
 
+function generateStars(width: number, height: number): Star[] {
+  const starCount = Math.floor((width * height) / 8000);
+  return Array.from({ length: Math.max(starCount, 50) }, () => ({
+    x: Math.random() * width,
+    y: Math.random() * height,
+    size: 0.5 + Math.random() * 1.5,
+    baseOpacity: 0.2 + Math.random() * 0.5,
+    anim: new Animated.Value(Math.random()),
+    twinkleSpeed: 1200 + Math.random() * 2800,
+    color: randomColor(),
+  }));
+}
+
 export function StardustBackground() {
-  const starsRef = useRef<Star[]>([]);
+  const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
+  const [stars, setStars] = useState<Star[]>([]);
   const animsRef = useRef<Animated.CompositeAnimation | null>(null);
 
-  // Build stars once
-  if (starsRef.current.length === 0) {
-    starsRef.current = Array.from({ length: STAR_COUNT }, () => ({
-      x: Math.random() * width,
-      y: Math.random() * height,
-      size: 0.5 + Math.random() * 1.5,
-      baseOpacity: 0.2 + Math.random() * 0.5,
-      anim: new Animated.Value(Math.random()),
-      twinkleSpeed: 1200 + Math.random() * 2800,
-      color: randomColor(),
-    }));
-  }
+  useEffect(() => {
+    if (dimensions.width > 0 && dimensions.height > 0 && stars.length === 0) {
+      const newStars = generateStars(dimensions.width, dimensions.height);
+      setStars(newStars);
+    }
+  }, [dimensions, stars.length]);
 
   useEffect(() => {
-    const loops = starsRef.current.map((s) =>
+    if (stars.length === 0) return;
+
+    const loops = stars.map((s) =>
       Animated.loop(
         Animated.sequence([
           Animated.timing(s.anim, {
@@ -58,11 +65,18 @@ export function StardustBackground() {
     animsRef.current = Animated.parallel(loops);
     animsRef.current.start();
     return () => animsRef.current?.stop();
-  }, []);
+  }, [stars]);
 
   return (
-    <View style={StyleSheet.absoluteFillObject} pointerEvents="none">
-      {starsRef.current.map((star, i) => (
+    <View
+      style={[StyleSheet.absoluteFillObject, { backgroundColor: '#050208' }]}
+      pointerEvents="none"
+      onLayout={(event) => {
+        const { width, height } = event.nativeEvent.layout;
+        setDimensions({ width, height });
+      }}
+    >
+      {stars.map((star, i) => (
         <Animated.View
           key={i}
           style={{
