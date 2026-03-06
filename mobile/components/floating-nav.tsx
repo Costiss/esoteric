@@ -70,11 +70,11 @@ export function FloatingNav({ activeTab, onTabPress }: FloatingNavProps) {
           borderColor: 'rgba(255,255,255,0.15)',
           gap: 4,
           // Strong shadow to create depth and separation
-          shadowColor: 'rgba(0,0,0,0.8)',
-          shadowOffset: { width: 0, height: 8 },
-          shadowOpacity: 0.6,
-          shadowRadius: 24,
-          elevation: 20,
+          // shadowColor: 'rgba(0,0,0,0.8)',
+          // shadowOffset: { width: 0, height: 8 },
+          // shadowOpacity: 0.6,
+          // shadowRadius: 24,
+          // elevation: 20,
         }}
       >
         {NAV_ITEMS.map((item) => {

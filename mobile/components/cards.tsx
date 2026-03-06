@@ -47,11 +47,11 @@ export function GlassCard({
       borderWidth: 1,
       borderColor: C.glassBorder,
       // Standardized shadow across all glass components
-      shadowColor: 'rgba(0,0,0,0.3)',
-      shadowOffset: { width: 0, height: 4 },
-      shadowOpacity: 0.3,
-      shadowRadius: 12,
-      elevation: 8,
+      // shadowColor: 'rgba(0,0,0,0.3)',
+      // shadowOffset: { width: 0, height: 4 },
+      // shadowOpacity: 0.3,
+      // shadowRadius: 12,
+      // elevation: 8,
     },
     style,
   ];
