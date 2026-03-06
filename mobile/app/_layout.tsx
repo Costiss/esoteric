@@ -1,51 +1,58 @@
-import '@tamagui/native/setup-zeego';
+import {
+  CormorantGaramond_300Light,
+  CormorantGaramond_400Regular,
+  CormorantGaramond_500Medium,
+  CormorantGaramond_600SemiBold,
+  CormorantGaramond_700Bold,
+  useFonts,
+} from '@expo-google-fonts/cormorant-garamond';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { useColorScheme } from 'react-native';
-import { TamaguiProvider, Theme } from 'tamagui';
+import { View } from 'react-native';
 import 'react-native-reanimated';
-
-import { ErrorBoundary } from '@/components/error-boundary';
-import { AuthProvider } from '@/contexts/auth-context';
+import { TamaguiProvider, Theme } from 'tamagui';
+import { StardustBackground } from '@/components/stardust-background';
 import config from '../tamagui.config';
 
 export const unstable_settings = {
   anchor: '(tabs)',
 };
 
-import { StardustBackground } from '@/components/animations';
-
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
+  const [fontsLoaded] = useFonts({
+    CormorantGaramond_300Light,
+    CormorantGaramond_400Regular,
+    CormorantGaramond_500Medium,
+    CormorantGaramond_600SemiBold,
+    CormorantGaramond_700Bold,
+  });
+
+  if (!fontsLoaded) return null;
 
   return (
-    <TamaguiProvider
-      config={config}
-      defaultTheme={colorScheme === 'dark' ? 'dark' : 'light'}
-    >
-      <Theme name={colorScheme === 'dark' ? 'dark' : 'light'}>
-        <ErrorBoundary>
-          <AuthProvider>
-            <StardustBackground />
-            <Stack
-              screenOptions={{
-                contentStyle: { backgroundColor: 'transparent' },
-              }}
-            >
-              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-              <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-              <Stack.Screen
-                name="onboarding"
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name="modal"
-                options={{ presentation: 'modal', title: 'Modal' }}
-              />
-            </Stack>
-            <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
-          </AuthProvider>
-        </ErrorBoundary>
+    <TamaguiProvider config={config} defaultTheme="dark">
+      <Theme name="dark">
+        {/* Deep-void base colour */}
+        <View
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: '#050208',
+          }}
+          pointerEvents="none"
+        />
+        <StardustBackground />
+        <Stack
+          screenOptions={{
+            contentStyle: { backgroundColor: 'transparent' },
+          }}
+        >
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        </Stack>
+        <StatusBar style="light" />
       </Theme>
     </TamaguiProvider>
   );

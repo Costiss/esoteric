@@ -1,5 +1,5 @@
 import { createAnimations } from '@tamagui/animations-react-native';
-import { createTamagui, createTokens } from '@tamagui/core';
+import { createFont, createTamagui, createTokens } from '@tamagui/core';
 import { createInterFont } from '@tamagui/font-inter';
 import { shorthands } from '@tamagui/shorthands';
 
@@ -21,10 +21,71 @@ const animations = createAnimations({
     mass: 1.2,
     stiffness: 250,
   },
+  // Matches Framer Motion spring(stiffness:400, damping:25) used in reference
+  snappy: {
+    type: 'spring',
+    damping: 25,
+    stiffness: 400,
+  },
+  // Nav shared-layout transition spring(stiffness:300, damping:25)
+  navIndicator: {
+    type: 'spring',
+    damping: 25,
+    stiffness: 300,
+  },
 });
 
-const headingFont = createInterFont();
+// Inter for body/UI text
 const bodyFont = createInterFont();
+
+// Cormorant Garamond for headings/display — loaded via useFonts in _layout
+const headingFont = createFont({
+  family: 'CormorantGaramond_400Regular',
+  size: {
+    1: 12,
+    2: 14,
+    3: 15,
+    4: 16,
+    5: 18,
+    6: 20,
+    7: 22,
+    8: 24,
+    9: 28,
+    10: 34,
+    true: 16,
+  },
+  lineHeight: {
+    1: 16,
+    2: 20,
+    3: 22,
+    4: 24,
+    5: 26,
+    6: 28,
+    7: 30,
+    8: 32,
+    9: 36,
+    10: 42,
+    true: 24,
+  },
+  weight: {
+    1: '300',
+    4: '400',
+    6: '500',
+    7: '600',
+    9: '700',
+    true: '400',
+  },
+  letterSpacing: {
+    4: 0,
+  },
+  face: {
+    300: { normal: 'CormorantGaramond_300Light' },
+    400: { normal: 'CormorantGaramond_400Regular' },
+    500: { normal: 'CormorantGaramond_500Medium' },
+    600: { normal: 'CormorantGaramond_600SemiBold' },
+    700: { normal: 'CormorantGaramond_700Bold' },
+  },
+});
 
 const tokens = createTokens({
   size: {
@@ -65,6 +126,9 @@ const tokens = createTokens({
     '2': 8,
     '3': 12,
     '4': 16,
+    '5': 20,
+    '6': 24,
+    '7': 9999,
     true: 8,
   },
   zIndex: {
@@ -76,13 +140,35 @@ const tokens = createTokens({
     '5': 50,
   },
   color: {
-    primary: '#FF2D55', // Nebula Red
-    secondary: '#00F2FF', // Electric Cyan
-    tertiary: '#39FF14', // Ethereal Green
-    accent: '#8B5CF6', // Keeping a purple accent
+    // Brand / accent colors
+    primary: '#FF2D55',
+    primaryForeground: '#ffffff',
+    accent: '#00F2FF',
+    accentForeground: '#050208',
+    ethereal: '#39FF14',
+    etherealForeground: '#050208',
+    deepPurple: '#8A2BE2',
+    gold: '#FFD700',
+    // Named aliases
+    nebulaPrimary: '#FF2D55',
+    electricCyan: '#00F2FF',
+    etherealGreen: '#39FF14',
+    // Base palette
     deepVoid: '#050208',
+    foreground: '#f0e6ff',
+    mutedForeground: 'rgba(240,230,255,0.6)',
+    cardBg: 'rgba(255,255,255,0.03)',
+    cardBgHover: 'rgba(255,255,255,0.05)',
+    glassBorder: 'rgba(255,255,255,0.08)',
+    glassBorderHover: 'rgba(255,255,255,0.15)',
+    glassBorderStrong: 'rgba(255,255,255,0.12)',
+    glassStrongBg: 'rgba(255,255,255,0.06)',
+    muted: 'rgba(255,255,255,0.05)',
+    popoverBg: 'rgba(15,10,25,0.95)',
+    sidebarBg: 'rgba(10,5,20,0.9)',
     white: '#FFFFFF',
     black: '#000000',
+    // Required gray scale tokens for Tamagui internals
     gray1: '#fcfcfc',
     gray2: '#f8f8f8',
     gray3: '#f3f3f3',
@@ -92,15 +178,15 @@ const tokens = createTokens({
     gray7: '#d9d9d9',
     gray8: '#cecece',
     gray9: '#bbbbbb',
-    gray10: '#8d8d8d',
-    gray11: '#646464',
+    gray10: 'rgba(240,230,255,0.6)',
+    gray11: 'rgba(240,230,255,0.4)',
     gray12: '#202020',
   },
 });
 
 const config = createTamagui({
   animations,
-  defaultTheme: 'light',
+  defaultTheme: 'dark',
   shouldAddPrefersColorThemes: false,
   themeClassNameOnRoot: false,
   shorthands,
@@ -109,31 +195,32 @@ const config = createTamagui({
     body: bodyFont,
   },
   themes: {
-    light: {
-      background: '#FFFFFF',
-      backgroundHover: '#F5F3FF',
-      backgroundPress: '#EDE9FE',
-      backgroundFocus: '#C4B5FD',
-      color: '#1E1B4B',
-      colorHover: '#374151',
-      colorPress: '#1E1B4B',
-      colorFocus: '#FF2D55',
-      borderColor: '#E5E7EB',
-      borderColorHover: '#00F2FF',
-      borderColorPress: '#FF2D55',
-      shadowColor: '#000000',
-    },
     dark: {
       background: '#050208',
       backgroundHover: '#130B1C',
       backgroundPress: '#20142C',
       backgroundFocus: '#2D1D3F',
-      color: '#F5F3FF',
+      color: '#f0e6ff',
       colorHover: '#EDE9FE',
       colorPress: '#00F2FF',
       colorFocus: '#FF2D55',
-      borderColor: '#2D1D3F',
-      borderColorHover: '#FF2D55',
+      borderColor: 'rgba(255,255,255,0.08)',
+      borderColorHover: 'rgba(255,255,255,0.15)',
+      borderColorPress: '#00F2FF',
+      shadowColor: '#000000',
+    },
+    // Light theme mirrors dark — app is permanently dark
+    light: {
+      background: '#050208',
+      backgroundHover: '#130B1C',
+      backgroundPress: '#20142C',
+      backgroundFocus: '#2D1D3F',
+      color: '#f0e6ff',
+      colorHover: '#EDE9FE',
+      colorPress: '#00F2FF',
+      colorFocus: '#FF2D55',
+      borderColor: 'rgba(255,255,255,0.08)',
+      borderColorHover: 'rgba(255,255,255,0.15)',
       borderColorPress: '#00F2FF',
       shadowColor: '#000000',
     },
