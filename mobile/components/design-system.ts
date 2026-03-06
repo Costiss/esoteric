@@ -20,7 +20,7 @@ export const C = {
   deepPurple: '#8A2BE2',
   gold: '#FFD700',
 
-  // Glass surfaces
+  // Glass surfaces - matching reference exactly
   glassBg: 'rgba(255,255,255,0.03)',
   glassBgHover: 'rgba(255,255,255,0.05)',
   glassBgStrong: 'rgba(255,255,255,0.06)',

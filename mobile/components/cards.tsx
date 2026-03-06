@@ -47,12 +47,34 @@ export function GlassCard({
       padding: 20,
       borderWidth: 1,
       borderColor: C.glassBorder,
+      // Add subtle shadow to simulate blur depth
+      shadowColor: 'rgba(0,0,0,0.3)',
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.3,
+      shadowRadius: 12,
+      elevation: 8,
     },
     style,
   ];
 
   if (!hover) {
-    return <View style={containerStyle}>{children}</View>;
+    return (
+      <View style={{ position: 'relative' }}>
+        {/* Blur simulation layer */}
+        <View
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(255,255,255,0.02)',
+            borderRadius: 24,
+          }}
+        />
+        <View style={containerStyle}>{children}</View>
+      </View>
+    );
   }
 
   return (
@@ -119,7 +141,13 @@ export function TarotCard({
             borderRadius: 24,
             padding: 24,
             borderWidth: 1,
-            borderColor: ac.border,
+            borderColor: C.glassBorder,
+            // Add subtle shadow to simulate blur depth
+            shadowColor: 'rgba(0,0,0,0.3)',
+            shadowOffset: { width: 0, height: 4 },
+            shadowOpacity: 0.3,
+            shadowRadius: 12,
+            elevation: 8,
           },
           animStyle,
         ]}
@@ -278,6 +306,12 @@ export function ProviderCard({
             backgroundColor: C.glassBg,
             borderWidth: 1,
             borderColor: C.glassBorder,
+            // Add subtle shadow to simulate blur depth
+            shadowColor: 'rgba(0,0,0,0.3)',
+            shadowOffset: { width: 0, height: 4 },
+            shadowOpacity: 0.3,
+            shadowRadius: 12,
+            elevation: 8,
           },
           animStyle,
         ]}
