@@ -1,17 +1,10 @@
-import { type Href, useRouter } from 'expo-router';
 import { Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { C } from '@/components/design-system';
-import { FloatingNav } from '@/components/floating-nav';
 import { StardustBackground } from '@/components/stardust-background';
 
 export default function ServicesScreen() {
   const insets = useSafeAreaInsets();
-  const router = useRouter();
-
-  const handleTabPress = (key: string) => {
-    router.push(`/${key}` as Href);
-  };
 
   return (
     <View style={{ flex: 1 }}>
@@ -30,7 +23,6 @@ export default function ServicesScreen() {
         </Text>
         <Text style={{ fontSize: 16, color: C.fgMuted }}>Coming Soon</Text>
       </View>
-      <FloatingNav activeTab="services" onTabPress={handleTabPress} />
     </View>
   );
 }

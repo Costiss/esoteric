@@ -18,7 +18,6 @@ import {
   ZodiacBadge,
 } from '@/components/cards';
 import { type AccentColor, C } from '@/components/design-system';
-import { FloatingNav } from '@/components/floating-nav';
 import { SparkleEffect } from '@/components/sparkle-effect';
 import { StardustBackground } from '@/components/stardust-background';
 import { CosmicHeader, DailyInsight, MysticalButton } from '@/components/ui';
@@ -109,11 +108,6 @@ export default function HomeScreen() {
     setShowSparkle(true);
     setTimeout(() => setShowSparkle(false), 50);
     router.push('/services' as Href);
-  };
-
-  const handleTabPress = (key: string) => {
-    const path = `/${key}` as Href;
-    router.push(path);
   };
 
   return (
@@ -539,8 +533,6 @@ export default function HomeScreen() {
           </View>
         </View>
       </ScrollView>
-
-      <FloatingNav activeTab="index" onTabPress={handleTabPress} />
     </View>
   );
 }

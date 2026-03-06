@@ -1,11 +1,10 @@
 import type { ReactNode } from 'react';
-import { Pressable } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withSpring,
 } from 'react-native-reanimated';
-import { Text, View } from 'tamagui';
 import { ACCENT_COLORS, type AccentColor, C } from './design-system';
 
 interface GlassCardProps {
@@ -47,7 +46,7 @@ export function GlassCard({
       padding: 20,
       borderWidth: 1,
       borderColor: C.glassBorder,
-      // Add subtle shadow to simulate blur depth
+      // Standardized shadow across all glass components
       shadowColor: 'rgba(0,0,0,0.3)',
       shadowOffset: { width: 0, height: 4 },
       shadowOpacity: 0.3,
@@ -58,23 +57,7 @@ export function GlassCard({
   ];
 
   if (!hover) {
-    return (
-      <View style={{ position: 'relative' }}>
-        {/* Blur simulation layer */}
-        <View
-          style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            backgroundColor: 'rgba(255,255,255,0.02)',
-            borderRadius: 24,
-          }}
-        />
-        <View style={containerStyle}>{children}</View>
-      </View>
-    );
+    return <View style={containerStyle}>{children}</View>;
   }
 
   return (
@@ -139,6 +122,7 @@ export function TarotCard({
           {
             backgroundColor: C.glassBg,
             borderRadius: 24,
+            backdropFilter: 'blur(20px)',
             padding: 24,
             borderWidth: 1,
             borderColor: C.glassBorder,
@@ -444,7 +428,7 @@ export function ZodiacBadge({
             paddingHorizontal: 14,
             borderRadius: 12,
             borderWidth: 1,
-            backgroundColor: isActive ? el.bg : 'rgba(255,255,255,0.02)',
+            backgroundColor: isActive ? el.bg : C.glassBg,
             borderColor: isActive ? el.border : C.glassBorder,
           },
           isActive && {
