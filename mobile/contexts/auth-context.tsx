@@ -1,6 +1,12 @@
-import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
 import { useRouter, useSegments } from 'expo-router';
 import * as SecureStore from 'expo-secure-store';
+import {
+  createContext,
+  type ReactNode,
+  useContext,
+  useEffect,
+  useState,
+} from 'react';
 import { apiClient, type ProviderProfile } from '@/lib/api-client';
 
 interface User {
@@ -23,7 +29,11 @@ interface AuthContextType {
   isAuthenticated: boolean;
   isProvider: boolean;
   login: (email: string, password: string) => Promise<void>;
-  register: (email: string, password: string, fullName: string) => Promise<void>;
+  register: (
+    email: string,
+    password: string,
+    fullName: string,
+  ) => Promise<void>;
   logout: () => Promise<void>;
   refreshAccessToken: () => Promise<boolean>;
   loadProviderProfile: () => Promise<void>;
@@ -39,7 +49,8 @@ const PROVIDER_KEY = 'provider_data';
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
-  const [providerProfile, setProviderProfile] = useState<ProviderProfile | null>(null);
+  const [providerProfile, setProviderProfile] =
+    useState<ProviderProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
   const segments = useSegments();
@@ -55,7 +66,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const inAuthGroup = segments[0] === '(auth)';
     const inOnboarding = segments[0] === 'onboarding';
-    
+
     if (!isLoading) {
       if (!user && !inAuthGroup && !inOnboarding) {
         router.replace('/(auth)/login');
@@ -68,17 +79,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const loadStoredAuth = async () => {
     try {
-      const [accessToken, refreshToken, expiresAtStr, userData, providerData] = await Promise.all([
-        SecureStore.getItemAsync(ACCESS_TOKEN_KEY),
-        SecureStore.getItemAsync(REFRESH_TOKEN_KEY),
-        SecureStore.getItemAsync(EXPIRES_AT_KEY),
-        SecureStore.getItemAsync(USER_KEY),
-        SecureStore.getItemAsync(PROVIDER_KEY),
-      ]);
+      const [accessToken, refreshToken, expiresAtStr, userData, providerData] =
+        await Promise.all([
+          SecureStore.getItemAsync(ACCESS_TOKEN_KEY),
+          SecureStore.getItemAsync(REFRESH_TOKEN_KEY),
+          SecureStore.getItemAsync(EXPIRES_AT_KEY),
+          SecureStore.getItemAsync(USER_KEY),
+          SecureStore.getItemAsync(PROVIDER_KEY),
+        ]);
 
       if (accessToken && refreshToken && expiresAtStr) {
         const expiresAt = parseInt(expiresAtStr, 10);
-        
+
         if (Date.now() >= expiresAt) {
           const refreshed = await refreshAccessToken();
           if (!refreshed) {
@@ -102,7 +114,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const loadProviderProfile = async () => {
     if (!user) return;
-    
+
     try {
       const profile = await apiClient.getProviderByUserId(user.id);
       setProviderProfile(profile);
@@ -153,7 +165,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         refresh_token: response.refresh_token,
         expires_at: Date.now() + response.expires_in * 1000,
       };
-      
+
       const userData: User = {
         id: response.user_id,
         email,
@@ -168,7 +180,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const register = async (email: string, password: string, fullName: string) => {
+  const register = async (
+    email: string,
+    password: string,
+    fullName: string,
+  ) => {
     try {
       const response = await apiClient.register(email, password, fullName);
       const tokens: AuthTokens = {
@@ -176,7 +192,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         refresh_token: response.refresh_token,
         expires_at: Date.now() + response.expires_in * 1000,
       };
-      
+
       const userData: User = {
         id: response.user_id,
         email,
@@ -212,7 +228,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
 
       const response = await apiClient.refreshToken(refreshToken);
-      
+
       if (response && response.access_token) {
         const tokens: AuthTokens = {
           access_token: response.access_token,
@@ -223,7 +239,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         await Promise.all([
           SecureStore.setItemAsync(ACCESS_TOKEN_KEY, tokens.access_token),
           SecureStore.setItemAsync(REFRESH_TOKEN_KEY, tokens.refresh_token),
-          SecureStore.setItemAsync(EXPIRES_AT_KEY, tokens.expires_at.toString()),
+          SecureStore.setItemAsync(
+            EXPIRES_AT_KEY,
+            tokens.expires_at.toString(),
+          ),
         ]);
 
         return true;

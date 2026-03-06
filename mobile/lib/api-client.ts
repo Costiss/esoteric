@@ -1,7 +1,7 @@
-import * as SecureStore from 'expo-secure-store';
 import Constants from 'expo-constants';
+import * as SecureStore from 'expo-secure-store';
 
-const API_BASE_URL = 
+const API_BASE_URL =
   Constants.expoConfig?.extra?.apiUrl ||
   process.env.EXPO_PUBLIC_API_URL ||
   'http://localhost:3000';
@@ -89,10 +89,10 @@ async function getAuthHeaders(): Promise<Record<string, string>> {
 
 async function apiRequest<T>(
   endpoint: string,
-  options: RequestInit = {}
+  options: RequestInit = {},
 ): Promise<T> {
   const headers = await getAuthHeaders();
-  
+
   const response = await fetch(`${API_BASE_URL}${endpoint}`, {
     ...options,
     headers: {
@@ -103,7 +103,9 @@ async function apiRequest<T>(
 
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
-    throw new Error(errorData.error || `HTTP ${response.status}: ${response.statusText}`);
+    throw new Error(
+      errorData.error || `HTTP ${response.status}: ${response.statusText}`,
+    );
   }
 
   const data = await response.json();
@@ -144,7 +146,11 @@ export const apiClient = {
       body: JSON.stringify({ email, password }),
     }),
 
-  register: (email: string, password: string, fullName: string): Promise<RegisterResponse> =>
+  register: (
+    email: string,
+    password: string,
+    fullName: string,
+  ): Promise<RegisterResponse> =>
     apiRequest<RegisterResponse>('/api/v1/users/register', {
       method: 'POST',
       body: JSON.stringify({ email, password, full_name: fullName }),
@@ -156,7 +162,13 @@ export const apiClient = {
       body: JSON.stringify({ refresh_token: refreshToken }),
     }),
 
-  refreshToken: (refreshToken: string): Promise<{ access_token: string; refresh_token?: string; expires_in: number }> =>
+  refreshToken: (
+    refreshToken: string,
+  ): Promise<{
+    access_token: string;
+    refresh_token?: string;
+    expires_in: number;
+  }> =>
     apiRequest('/oauth/token', {
       method: 'POST',
       body: JSON.stringify({
@@ -180,8 +192,14 @@ export const apiClient = {
     apiRequest<ProviderProfile>(`/api/v1/providers/user/${userId}`),
 
   // Services
-  listServices: (params?: { page?: number; per_page?: number; published_only?: boolean }): Promise<{ services: Service[]; total: number }> =>
-    apiRequest(`/api/v1/services?${new URLSearchParams(params as Record<string, string>).toString()}`),
+  listServices: (params?: {
+    page?: number;
+    per_page?: number;
+    published_only?: boolean;
+  }): Promise<{ services: Service[]; total: number }> =>
+    apiRequest(
+      `/api/v1/services?${new URLSearchParams(params as Record<string, string>).toString()}`,
+    ),
 
   searchServices: (params: {
     tag?: string;
@@ -191,7 +209,9 @@ export const apiClient = {
     page?: number;
     per_page?: number;
   }): Promise<{ services: Service[]; total: number }> =>
-    apiRequest(`/api/v1/services/search?${new URLSearchParams(params as Record<string, string>).toString()}`),
+    apiRequest(
+      `/api/v1/services/search?${new URLSearchParams(params as Record<string, string>).toString()}`,
+    ),
 
   getService: (serviceId: string): Promise<Service> =>
     apiRequest<Service>(`/api/v1/services/${serviceId}`),
@@ -202,7 +222,10 @@ export const apiClient = {
       body: JSON.stringify(data),
     }),
 
-  updateService: (serviceId: string, data: UpdateServiceData): Promise<Service> =>
+  updateService: (
+    serviceId: string,
+    data: UpdateServiceData,
+  ): Promise<Service> =>
     apiRequest<Service>(`/api/v1/services/${serviceId}`, {
       method: 'PUT',
       body: JSON.stringify(data),
@@ -224,8 +247,14 @@ export const apiClient = {
     }),
 
   // Providers
-  listProviders: (params?: { page?: number; per_page?: number; verified_only?: boolean }): Promise<{ providers: Provider[]; total: number }> =>
-    apiRequest(`/api/v1/providers?${new URLSearchParams(params as Record<string, string>).toString()}`),
+  listProviders: (params?: {
+    page?: number;
+    per_page?: number;
+    verified_only?: boolean;
+  }): Promise<{ providers: Provider[]; total: number }> =>
+    apiRequest(
+      `/api/v1/providers?${new URLSearchParams(params as Record<string, string>).toString()}`,
+    ),
 
   getProvider: (providerId: string): Promise<Provider> =>
     apiRequest<Provider>(`/api/v1/providers/${providerId}`),
@@ -250,8 +279,14 @@ export const apiClient = {
   getBooking: (bookingId: string): Promise<Booking> =>
     apiRequest<Booking>(`/api/v1/bookings/${bookingId}`),
 
-  listBookings: (params?: { page?: number; per_page?: number; status?: string }): Promise<{ bookings: Booking[]; total: number }> =>
-    apiRequest(`/api/v1/bookings?${new URLSearchParams(params as Record<string, string>).toString()}`),
+  listBookings: (params?: {
+    page?: number;
+    per_page?: number;
+    status?: string;
+  }): Promise<{ bookings: Booking[]; total: number }> =>
+    apiRequest(
+      `/api/v1/bookings?${new URLSearchParams(params as Record<string, string>).toString()}`,
+    ),
 
   confirmBooking: (bookingId: string): Promise<Booking> =>
     apiRequest<Booking>(`/api/v1/bookings/${bookingId}/confirm`, {
@@ -274,14 +309,41 @@ export const apiClient = {
       body: JSON.stringify({ cancellation_reason: reason }),
     }),
 
-  getCustomerBookings: (customerId: string, params?: { page?: number; per_page?: number }): Promise<{ bookings: Booking[]; total: number }> =>
-    apiRequest(`/api/v1/customers/${customerId}/bookings?${new URLSearchParams(params as Record<string, string>).toString()}`),
+  getCustomerBookings: (
+    customerId: string,
+    params?: { page?: number; per_page?: number },
+  ): Promise<{ bookings: Booking[]; total: number }> =>
+    apiRequest(
+      `/api/v1/customers/${customerId}/bookings?${new URLSearchParams(params as Record<string, string>).toString()}`,
+    ),
 
-  getProviderBookings: (providerId: string, params?: { page?: number; per_page?: number }): Promise<{ bookings: Booking[]; total: number }> =>
-    apiRequest(`/api/v1/providers/${providerId}/bookings?${new URLSearchParams(params as Record<string, string>).toString()}`),
+  getProviderBookings: (
+    providerId: string,
+    params?: { page?: number; per_page?: number },
+  ): Promise<{ bookings: Booking[]; total: number }> =>
+    apiRequest(
+      `/api/v1/providers/${providerId}/bookings?${new URLSearchParams(params as Record<string, string>).toString()}`,
+    ),
 
-  checkAvailability: (providerId: string, startTs: string, endTs: string): Promise<{ available: boolean }> =>
-    apiRequest(`/api/v1/providers/${providerId}/availability?start_ts=${startTs}&end_ts=${endTs}`),
+  checkAvailability: (
+    providerId: string,
+    startTs: string,
+    endTs: string,
+  ): Promise<{ available: boolean }> =>
+    apiRequest(
+      `/api/v1/providers/${providerId}/availability?start_ts=${startTs}&end_ts=${endTs}`,
+    ),
 };
 
-export type { User, Service, Provider, Booking, LoginResponse, RegisterResponse, ProviderProfile, ProviderStats, CreateServiceData, UpdateServiceData };
+export type {
+  User,
+  Service,
+  Provider,
+  Booking,
+  LoginResponse,
+  RegisterResponse,
+  ProviderProfile,
+  ProviderStats,
+  CreateServiceData,
+  UpdateServiceData,
+};

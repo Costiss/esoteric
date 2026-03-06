@@ -1,29 +1,34 @@
-import { useState, useEffect, useCallback } from 'react';
-import { useRouter } from 'expo-router';
 import {
-  YStack,
-  XStack,
-  Text,
+  AlertCircle,
+  Calendar,
+  CheckCircle,
+  Clock,
+  DollarSign,
+  Package,
+} from '@tamagui/lucide-icons';
+import { useRouter } from 'expo-router';
+import { useCallback, useEffect, useState } from 'react';
+import {
   Button,
-  Card,
   H2,
   H3,
-  Spinner,
   ScrollView,
-  View,
   Separator,
+  Spinner,
   Tabs,
+  Text,
+  View,
+  XStack,
+  YStack,
 } from 'tamagui';
+import { FloatingElement, GlassCard, Sparkle } from '@/components/animations';
 import { useAuth } from '@/contexts/auth-context';
-import { apiClient, type Booking, type Service, type ProviderStats } from '@/lib/api-client';
-import { 
-  Calendar, 
-  DollarSign, 
-  Package,
-  Clock,
-  CheckCircle,
-  AlertCircle
-} from '@tamagui/lucide-icons';
+import {
+  apiClient,
+  type Booking,
+  type ProviderStats,
+  type Service,
+} from '@/lib/api-client';
 
 export default function ProviderDashboardScreen() {
   const [activeTab, setActiveTab] = useState('overview');
@@ -32,17 +37,17 @@ export default function ProviderDashboardScreen() {
   const [recentBookings, setRecentBookings] = useState<Booking[]>([]);
   const [services, setServices] = useState<Service[]>([]);
   const [error, setError] = useState('');
-  
+
   const { providerProfile } = useAuth();
   const router = useRouter();
 
   const loadDashboardData = useCallback(async () => {
     if (!providerProfile) return;
-    
+
     try {
       setIsLoading(true);
       setError('');
-      
+
       const [statsData, bookingsData, servicesData] = await Promise.all([
         apiClient.getProviderStats(providerProfile.id).catch(() => ({
           total_bookings: 0,
@@ -53,12 +58,14 @@ export default function ProviderDashboardScreen() {
         apiClient.getProviderBookings(providerProfile.id, { per_page: 5 }),
         apiClient.getProviderServices(providerProfile.id),
       ]);
-      
+
       setStats(statsData);
       setRecentBookings(bookingsData.bookings);
       setServices(servicesData);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load dashboard data');
+      setError(
+        err instanceof Error ? err.message : 'Failed to load dashboard data',
+      );
     } finally {
       setIsLoading(false);
     }
@@ -85,24 +92,24 @@ export default function ProviderDashboardScreen() {
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'confirmed':
-        return <CheckCircle size={16} color="#10B981" />;
+        return <CheckCircle size={16} color="$tertiary" />;
       case 'requested':
-        return <AlertCircle size={16} color="#F59E0B" />;
+        return <AlertCircle size={16} color="$primary" />;
       case 'in_progress':
-        return <Clock size={16} color="#3B82F6" />;
+        return <Clock size={16} color="$secondary" />;
       default:
-        return <Clock size={16} color="#6B7280" />;
+        return <Clock size={16} color="$gray10" />;
     }
   };
 
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'confirmed':
-        return '$green10';
+        return '$tertiary';
       case 'in_progress':
-        return '$blue10';
+        return '$secondary';
       case 'cancelled':
-        return '$red10';
+        return '$primary';
       case 'completed':
         return '$gray10';
       default:
@@ -112,10 +119,10 @@ export default function ProviderDashboardScreen() {
 
   if (isLoading) {
     return (
-      <YStack f={1} jc="center" ai="center" bg="$background">
-        <Spinner size="large" />
+      <YStack f={1} jc="center" ai="center" bg="transparent">
+        <Spinner size="large" color="$secondary" />
         <Text mt="$4" color="$gray10">
-          Loading dashboard...
+          Peer-ing into the veil...
         </Text>
       </YStack>
     );
@@ -123,92 +130,116 @@ export default function ProviderDashboardScreen() {
 
   if (error) {
     return (
-      <YStack f={1} jc="center" ai="center" p="$4" bg="$background">
-        <AlertCircle size={64} color="#EF4444" />
-        <Text mt="$4" color="$red10" textAlign="center">
+      <YStack f={1} jc="center" ai="center" p="$4" bg="transparent">
+        <AlertCircle size={64} color="$primary" />
+        <Text mt="$4" color="$primary" textAlign="center">
           {error}
         </Text>
-        <Button mt="$4" onPress={loadDashboardData}>
-          Retry
+        <Button mt="$4" onPress={loadDashboardData} backgroundColor="$primary">
+          <Text color="white">Retry</Text>
         </Button>
       </YStack>
     );
   }
 
   return (
-    <YStack f={1} bg="$background">
+    <YStack f={1} bg="transparent">
       <ScrollView>
-        <YStack p="$4" space="$4">
+        <YStack p="$4" gap="$4">
           {/* Header */}
           <XStack jc="space-between" ai="center">
-            <YStack>
-              <H2 color="$color">Provider Dashboard</H2>
-              <Text color="$gray10">
+            <YStack gap="$1">
+              <H2 color="$color">Sanctum Control</H2>
+              <Text color="$gray11">
                 Welcome back, {providerProfile?.display_name}
               </Text>
             </YStack>
             {providerProfile?.is_verified && (
-              <View bg="$green10" px="$2" py="$1" br="$2">
-                <Text color="white" fontSize="$2" fontWeight="600">
+              <XStack
+                ai="center"
+                gap="$1"
+                bg="rgba(57, 255, 20, 0.1)"
+                px="$2"
+                py="$1"
+                br="$2"
+                borderColor="$tertiary"
+                borderWidth={1}
+              >
+                <Sparkle size={12} color="$tertiary" />
+                <Text color="$tertiary" fontSize="$2" fontWeight="700">
                   Verified
                 </Text>
-              </View>
+              </XStack>
             )}
           </XStack>
 
           {/* Stats Cards */}
           <XStack flexWrap="wrap" gap="$3">
             <StatCard
-              title="Total Bookings"
+              title="Total Visions"
               value={stats?.total_bookings || 0}
-              icon={<Calendar size={24} color="#8B5CF6" />}
+              icon={<Calendar size={24} color="$secondary" />}
               flex={1}
             />
             <StatCard
-              title="Pending"
+              title="Awaiting"
               value={stats?.pending_confirmations || 0}
-              icon={<AlertCircle size={24} color="#F59E0B" />}
+              icon={<AlertCircle size={24} color="$primary" />}
               flex={1}
             />
           </XStack>
 
           <XStack flexWrap="wrap" gap="$3">
             <StatCard
-              title="This Month"
+              title="Essence Gained"
               value={formatCurrency(stats?.earnings_this_month_cents || 0)}
-              icon={<DollarSign size={24} color="#10B981" />}
+              icon={<DollarSign size={24} color="$tertiary" />}
               flex={1}
             />
             <StatCard
-              title="Services"
+              title="Rituals"
               value={stats?.active_services || services.length}
-              icon={<Package size={24} color="#3B82F6" />}
+              icon={<Package size={24} color="$secondary" />}
               flex={1}
             />
           </XStack>
 
           {/* Quick Actions */}
-          <Card elevate bordered p="$4">
-            <H3 color="$color" mb="$3">
-              Quick Actions
+          <GlassCard elevation={5} p="$4">
+            <H3 color="$color" mb="$3" fontSize="$5">
+              Quick Invocations
             </H3>
-            <XStack flexWrap="wrap" gap="$2">
+            <XStack gap="$2">
               <Button
                 flex={1}
-                icon={<Package size={16} />}
-                onPress={() => router.push('/provider/services/new')}
+                backgroundColor="rgba(255, 45, 85, 0.1)"
+                borderColor="$primary"
+                borderWidth={1}
+                onPress={() => {}}
               >
-                New Service
+                <XStack ai="center" gap="$2">
+                  <Package size={16} color="white" />
+                  <Text color="white" fontWeight="600">
+                    New Ritual
+                  </Text>
+                </XStack>
               </Button>
               <Button
                 flex={1}
-                icon={<Calendar size={16} />}
+                backgroundColor="rgba(0, 242, 255, 0.1)"
+                borderColor="$secondary"
+                borderWidth={1}
                 onPress={() => setActiveTab('bookings')}
               >
-                View Bookings
+                <XStack ai="center" gap="$2">
+                  <Calendar size={16} color="white" />
+                  <Text color="white" fontWeight="600">
+                    Bookings
+                  </Text>
+                </XStack>
               </Button>
             </XStack>
-          </Card>
+          </GlassCard>
 
           {/* Tab Content */}
           <Tabs
@@ -217,15 +248,45 @@ export default function ProviderDashboardScreen() {
             orientation="horizontal"
             flexDirection="column"
           >
-            <Tabs.List>
-              <Tabs.Tab value="overview" flex={1}>
-                <Text>Overview</Text>
+            <Tabs.List gap="$2" backgroundColor="transparent" borderWidth={0}>
+              <Tabs.Tab
+                value="overview"
+                flex={1}
+                backgroundColor={
+                  activeTab === 'overview'
+                    ? 'rgba(255,255,255,0.1)'
+                    : 'transparent'
+                }
+              >
+                <Text color={activeTab === 'overview' ? 'white' : '$gray10'}>
+                  Overview
+                </Text>
               </Tabs.Tab>
-              <Tabs.Tab value="bookings" flex={1}>
-                <Text>Bookings</Text>
+              <Tabs.Tab
+                value="bookings"
+                flex={1}
+                backgroundColor={
+                  activeTab === 'bookings'
+                    ? 'rgba(255,255,255,0.1)'
+                    : 'transparent'
+                }
+              >
+                <Text color={activeTab === 'bookings' ? 'white' : '$gray10'}>
+                  Bookings
+                </Text>
               </Tabs.Tab>
-              <Tabs.Tab value="services" flex={1}>
-                <Text>Services</Text>
+              <Tabs.Tab
+                value="services"
+                flex={1}
+                backgroundColor={
+                  activeTab === 'services'
+                    ? 'rgba(255,255,255,0.1)'
+                    : 'transparent'
+                }
+              >
+                <Text color={activeTab === 'services' ? 'white' : '$gray10'}>
+                  Services
+                </Text>
               </Tabs.Tab>
             </Tabs.List>
 
@@ -267,17 +328,17 @@ interface StatCardProps {
 
 function StatCard({ title, value, icon, flex }: StatCardProps) {
   return (
-    <Card elevate bordered p="$3" flex={flex} minWidth={140}>
-      <XStack ai="center" space="$2" mb="$2">
+    <GlassCard elevation={5} p="$3" flex={flex} minWidth={140}>
+      <XStack ai="center" gap="$2" mb="$2">
         {icon}
-        <Text fontSize="$2" color="$gray10">
+        <Text fontSize="$2" color="$gray11">
           {title}
         </Text>
       </XStack>
       <Text fontSize="$7" fontWeight="700" color="$color">
         {value}
       </Text>
-    </Card>
+    </GlassCard>
   );
 }
 
@@ -289,106 +350,142 @@ interface OverviewTabProps {
   getStatusColor: (status: string) => string;
 }
 
-function OverviewTab({ 
-  recentBookings, 
-  services, 
-  formatDate, 
+function OverviewTab({
+  recentBookings,
+  services,
+  formatDate,
   getStatusIcon,
-  getStatusColor 
+  getStatusColor,
 }: OverviewTabProps) {
   const router = useRouter();
 
   return (
-    <YStack space="$4">
+    <YStack gap="$4">
       {/* Recent Bookings */}
-      <Card elevate bordered>
-        <YStack p="$4" space="$3">
-          <XStack jc="space-between" ai="center">
-            <H3 color="$color">Recent Bookings</H3>
-            <Button size="$2" onPress={() => {}}>
+      <GlassCard elevation={5} gap="$3">
+        <XStack jc="space-between" ai="center">
+          <H3 color="$color" fontSize="$5">
+            Recent Visions
+          </H3>
+          <Button
+            size="$2"
+            backgroundColor="transparent"
+            borderColor="rgba(255,255,255,0.2)"
+            borderWidth={1}
+          >
+            <Text color="white" fontSize="$1">
               View All
-            </Button>
-          </XStack>
-          
-          {recentBookings.length === 0 ? (
-            <Text color="$gray10" textAlign="center" py="$4">
-              No bookings yet
             </Text>
-          ) : (
-            recentBookings.slice(0, 3).map((booking) => (
-              <Card key={booking.id} bordered p="$3">
-                <XStack jc="space-between" ai="center">
-                  <YStack>
-                    <Text fontWeight="600" color="$color">
-                      Service ID: {booking.service_id.slice(0, 8)}...
-                    </Text>
-                    <Text fontSize="$2" color="$gray10">
-                      {formatDate(booking.start_ts)}
-                    </Text>
-                  </YStack>
-                  <XStack ai="center" space="$2">
-                    {getStatusIcon(booking.status)}
-                    <View bg={getStatusColor(booking.status)} px="$2" py="$1" br="$2">
-                      <Text color="white" fontSize="$1" textTransform="capitalize">
-                        {booking.status.replace('_', ' ')}
-                      </Text>
-                    </View>
-                  </XStack>
-                </XStack>
-              </Card>
-            ))
-          )}
-        </YStack>
-      </Card>
+          </Button>
+        </XStack>
 
-      {/* Active Services Preview */}
-      <Card elevate bordered>
-        <YStack p="$4" space="$3">
-          <XStack jc="space-between" ai="center">
-            <H3 color="$color">Active Services</H3>
-            <Button size="$2" onPress={() => {}}>
-              Manage
-            </Button>
-          </XStack>
-          
-          {services.length === 0 ? (
-            <Text color="$gray10" textAlign="center" py="$4">
-              No services yet. Create your first service!
-            </Text>
-          ) : (
-            services.map((service) => (
-              <Card 
-                key={service.id} 
-                bordered 
-                p="$3"
-                pressStyle={{ bg: '$backgroundHover' }}
-                onPress={() => router.push(`/service/${service.id}`)}
-              >
-                <XStack jc="space-between" ai="center">
-                  <YStack flex={1}>
-                    <Text fontWeight="600" color="$color" numberOfLines={1}>
-                      {service.title}
-                    </Text>
-                    <Text fontSize="$2" color="$gray10">
-                      {service.duration_minutes} min • R$ {(service.price_cents / 100).toFixed(2)}
-                    </Text>
-                  </YStack>
+        {recentBookings.length === 0 ? (
+          <Text color="$gray11" textAlign="center" py="$4">
+            No visions recorded yet
+          </Text>
+        ) : (
+          recentBookings.slice(0, 3).map((booking) => (
+            <View
+              key={booking.id}
+              p="$3"
+              br="$4"
+              backgroundColor="rgba(255,255,255,0.03)"
+              borderColor="rgba(255,255,255,0.05)"
+              borderWidth={1}
+            >
+              <XStack jc="space-between" ai="center">
+                <YStack gap="$1">
+                  <Text fontWeight="600" color="$color" fontSize="$3">
+                    Ref: {booking.id.slice(0, 8)}...
+                  </Text>
+                  <Text fontSize="$2" color="$gray11">
+                    {formatDate(booking.start_ts)}
+                  </Text>
+                </YStack>
+                <XStack ai="center" gap="$2">
+                  {getStatusIcon(booking.status)}
                   <View
-                    bg={service.is_published ? '$green10' : '$yellow10'}
+                    bg={getStatusColor(booking.status)}
                     px="$2"
                     py="$1"
                     br="$2"
+                    opacity={0.8}
                   >
-                    <Text color="white" fontSize="$1">
-                      {service.is_published ? 'Published' : 'Draft'}
+                    <Text
+                      color="white"
+                      fontSize="$1"
+                      fontWeight="700"
+                      textTransform="capitalize"
+                    >
+                      {booking.status.replace('_', ' ')}
                     </Text>
                   </View>
                 </XStack>
-              </Card>
-            ))
-          )}
-        </YStack>
-      </Card>
+              </XStack>
+            </View>
+          ))
+        )}
+      </GlassCard>
+
+      {/* Active Services Preview */}
+      <GlassCard elevation={5} gap="$3">
+        <XStack jc="space-between" ai="center">
+          <H3 color="$color" fontSize="$5">
+            Active Rituals
+          </H3>
+          <Button
+            size="$2"
+            backgroundColor="transparent"
+            borderColor="rgba(255,255,255,0.2)"
+            borderWidth={1}
+          >
+            <Text color="white" fontSize="$1">
+              Manage
+            </Text>
+          </Button>
+        </XStack>
+
+        {services.length === 0 ? (
+          <Text color="$gray11" textAlign="center" py="$4">
+            No active rituals. Manifest your first one!
+          </Text>
+        ) : (
+          services.map((service) => (
+            <View
+              key={service.id}
+              p="$3"
+              br="$4"
+              backgroundColor="rgba(255,255,255,0.03)"
+              borderColor="rgba(255,255,255,0.05)"
+              borderWidth={1}
+              onPress={() => router.push(`/service/${service.id}`)}
+            >
+              <XStack jc="space-between" ai="center">
+                <YStack flex={1} gap="$1">
+                  <Text fontWeight="600" color="$color" numberOfLines={1}>
+                    {service.title}
+                  </Text>
+                  <Text fontSize="$2" color="$gray11">
+                    {service.duration_minutes} min • R${' '}
+                    {(service.price_cents / 100).toFixed(2)}
+                  </Text>
+                </YStack>
+                <View
+                  bg={service.is_published ? '$tertiary' : '$primary'}
+                  px="$2"
+                  py="$1"
+                  br="$2"
+                  opacity={0.8}
+                >
+                  <Text color="white" fontSize="$1" fontWeight="700">
+                    {service.is_published ? 'Active' : 'Draft'}
+                  </Text>
+                </View>
+              </XStack>
+            </View>
+          ))
+        )}
+      </GlassCard>
     </YStack>
   );
 }
@@ -400,57 +497,72 @@ interface BookingsTabProps {
   getStatusColor: (status: string) => string;
 }
 
-function BookingsTab({ bookings, formatDate, getStatusIcon, getStatusColor }: BookingsTabProps) {
+function BookingsTab({
+  bookings,
+  formatDate,
+  getStatusIcon,
+  getStatusColor,
+}: BookingsTabProps) {
   const router = useRouter();
 
   return (
-    <YStack space="$3">
+    <YStack gap="$3" pb="$8">
       {bookings.length === 0 ? (
-        <Card elevate bordered p="$8">
-          <YStack ai="center" space="$3">
-            <Calendar size={64} color="gray" />
-            <Text color="$gray10" textAlign="center">
-              No bookings found
+        <GlassCard elevation={5} p="$8">
+          <YStack ai="center" gap="$3">
+            <FloatingElement>
+              <Calendar size={64} color="$secondary" opacity={0.5} />
+            </FloatingElement>
+            <Text color="$gray11" textAlign="center">
+              No rituals in the registry
             </Text>
           </YStack>
-        </Card>
+        </GlassCard>
       ) : (
         bookings.map((booking) => (
-          <Card 
-            key={booking.id} 
-            elevate 
-            bordered 
-            p="$4"
-            pressStyle={{ scale: 0.98 }}
-            onPress={() => router.push(`/booking/${booking.id}`)}
+          <GlassCard
+            key={booking.id}
+            elevation={5}
+            onPress={() => router.push('/(tabs)/bookings')}
           >
-            <YStack space="$3">
+            <YStack gap="$3">
               <XStack jc="space-between" ai="center">
                 <Text fontWeight="600" color="$color">
-                  Service ID: {booking.service_id.slice(0, 8)}...
+                  Ritual ID: {booking.id.slice(0, 8)}...
                 </Text>
-                <XStack ai="center" space="$2">
+                <XStack ai="center" gap="$2">
                   {getStatusIcon(booking.status)}
-                  <View bg={getStatusColor(booking.status)} px="$2" py="$1" br="$2">
-                    <Text color="white" fontSize="$2" textTransform="capitalize">
+                  <View
+                    bg={getStatusColor(booking.status)}
+                    px="$2"
+                    py="$1"
+                    br="$2"
+                    opacity={0.8}
+                  >
+                    <Text
+                      color="white"
+                      fontSize="$2"
+                      fontWeight="700"
+                      textTransform="capitalize"
+                    >
                       {booking.status.replace('_', ' ')}
                     </Text>
                   </View>
                 </XStack>
               </XStack>
-              
-              <Separator />
-              
-              <XStack space="$2" ai="center">
-                <Clock size={16} color="gray" />
-                <Text color="$gray10">{formatDate(booking.start_ts)}</Text>
+
+              <Separator borderColor="rgba(255,255,255,0.1)" />
+
+              <XStack gap="$2" ai="center">
+                <Clock size={16} color="$secondary" />
+                <Text color="$gray11">{formatDate(booking.start_ts)}</Text>
               </XStack>
-              
-              <Text fontWeight="600" color="$primary">
+
+              <Text fontWeight="700" color="$primary" fontSize="$5">
                 R$ {(booking.price_cents / 100).toFixed(2)}
               </Text>
             </YStack>
-          </Card>
+          </GlassCard>
         ))
       )}
     </YStack>
@@ -465,67 +577,67 @@ function ServicesTab({ services }: ServicesTabProps) {
   const router = useRouter();
 
   return (
-    <YStack space="$3">
-      <Button 
-        icon={<Package size={16} />}
-        onPress={() => router.push('/provider/services/new')}
-      >
-        Create New Service
+    <YStack gap="$3" pb="$8">
+      <Button backgroundColor="$primary" onPress={() => {}}>
+        <XStack ai="center" gap="$2">
+          <Package size={16} color="white" />
+          <Text color="white" fontWeight="700">
+            Forge New Ritual
+          </Text>
+        </XStack>
       </Button>
 
       {services.length === 0 ? (
-        <Card elevate bordered p="$8">
-          <YStack ai="center" space="$3">
-            <Package size={64} color="gray" />
-            <Text color="$gray10" textAlign="center">
-              No services yet. Create your first service to start receiving bookings!
+        <GlassCard elevation={5} p="$8">
+          <YStack ai="center" gap="$3">
+            <Package size={64} color="$secondary" opacity={0.5} />
+            <Text color="$gray11" textAlign="center">
+              Your sanctum is empty. Forge rituals to welcome seekers.
             </Text>
           </YStack>
-        </Card>
+        </GlassCard>
       ) : (
         services.map((service) => (
-          <Card 
-            key={service.id} 
-            elevate 
-            bordered 
-            p="$4"
-            pressStyle={{ scale: 0.98 }}
+          <GlassCard
+            key={service.id}
+            elevation={5}
             onPress={() => router.push(`/service/${service.id}`)}
           >
-            <YStack space="$3">
+            <YStack gap="$3">
               <XStack jc="space-between" ai="flex-start">
                 <Text flex={1} fontSize="$5" fontWeight="600" color="$color">
                   {service.title}
                 </Text>
                 <View
-                  bg={service.is_published ? '$green10' : '$yellow10'}
+                  bg={service.is_published ? '$tertiary' : '$primary'}
                   px="$2"
                   py="$1"
                   br="$2"
+                  opacity={0.8}
                 >
-                  <Text color="white" fontSize="$2">
-                    {service.is_published ? 'Published' : 'Draft'}
+                  <Text color="white" fontSize="$2" fontWeight="700">
+                    {service.is_published ? 'Active' : 'Draft'}
                   </Text>
                 </View>
               </XStack>
-              
-              <Text color="$gray10" fontSize="$3" numberOfLines={2}>
+
+              <Text color="$gray11" fontSize="$3" numberOfLines={2}>
                 {service.description}
               </Text>
-              
+
               <XStack jc="space-between" ai="center">
-                <Text color="$primary" fontWeight="600">
+                <Text color="$primary" fontWeight="700" fontSize="$4">
                   R$ {(service.price_cents / 100).toFixed(2)}
                 </Text>
-                <XStack space="$1" ai="center">
-                  <Clock size={14} color="gray" />
-                  <Text fontSize="$2" color="$gray10">
+                <XStack gap="$1" ai="center">
+                  <Clock size={14} color="$secondary" />
+                  <Text fontSize="$2" color="$gray11">
                     {service.duration_minutes} min
                   </Text>
                 </XStack>
               </XStack>
             </YStack>
-          </Card>
+          </GlassCard>
         ))
       )}
     </YStack>

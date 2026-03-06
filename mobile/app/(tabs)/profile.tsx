@@ -1,19 +1,25 @@
-import { useState, useCallback } from 'react';
-import { useRouter } from 'expo-router';
 import {
-  YStack,
-  XStack,
-  Text,
-  Button,
-  Card,
-  H2,
-  Spinner,
-  View,
-  Separator,
+  HelpCircle,
+  LogOut,
+  Settings,
+  Shield,
+  User,
+} from '@tamagui/lucide-icons';
+import { useRouter } from 'expo-router';
+import { useCallback, useState } from 'react';
+import {
   Avatar,
+  Button,
+  H2,
+  Separator,
+  Spinner,
+  Text,
+  View,
+  XStack,
+  YStack,
 } from 'tamagui';
+import { FloatingElement, GlassCard, Sparkle } from '@/components/animations';
 import { useAuth } from '@/contexts/auth-context';
-import { User, LogOut, Settings, Shield, HelpCircle } from '@tamagui/lucide-icons';
 
 export default function ProfileScreen() {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
@@ -33,57 +39,85 @@ export default function ProfileScreen() {
 
   if (!user) {
     return (
-      <YStack f={1} jc="center" ai="center" bg="$background">
-        <Spinner size="large" />
+      <YStack f={1} jc="center" ai="center" bg="transparent">
+        <Spinner size="large" color="$secondary" />
       </YStack>
     );
   }
 
   return (
-    <YStack f={1} p="$4" space="$4" bg="$background">
-      <YStack ai="center" space="$3" pt="$4">
-        <Avatar circular size="$10" bg="$primary">
-          <Avatar.Fallback bg="$primary">
-            <User size={48} color="white" />
-          </Avatar.Fallback>
-        </Avatar>
-        <H2 color="$color" textAlign="center">
-          {user.full_name || 'User'}
-        </H2>
-        <Text color="$gray10">{user.email}</Text>
+    <YStack f={1} p="$4" gap="$6" bg="transparent">
+      <YStack ai="center" gap="$3" pt="$4">
+        <FloatingElement duration={4000} distance={5}>
+          <Avatar
+            circular
+            size="$10"
+            bg="$primary"
+            shadowColor="$primary"
+            shadowRadius={20}
+            shadowOpacity={0.4}
+          >
+            <Avatar.Fallback bg="$primary">
+              <User size={48} color="white" />
+            </Avatar.Fallback>
+          </Avatar>
+        </FloatingElement>
+
+        <YStack ai="center" gap="$1">
+          <XStack ai="center" gap="$2">
+            <H2 color="$color" textAlign="center">
+              {user.full_name || 'Seeker'}
+            </H2>
+            <Sparkle size={20} color="$secondary" />
+          </XStack>
+          <Text color="$gray11" fontSize="$3">
+            {user.email}
+          </Text>
+        </YStack>
       </YStack>
 
-      <Card elevate bordered>
+      <GlassCard elevation={5} p={0} overflow="hidden">
         <YStack>
           <MenuItem
-            icon={<Settings size={20} />}
-            title="Edit Profile"
+            icon={<Settings size={20} color="$secondary" />}
+            title="Edit Identity"
             onPress={() => {}}
           />
-          <Separator />
+          <Separator borderColor="rgba(255,255,255,0.05)" />
           <MenuItem
-            icon={<Shield size={20} />}
-            title="Privacy & Security"
+            icon={<Shield size={20} color="$tertiary" />}
+            title="Wards & Security"
             onPress={() => {}}
           />
-          <Separator />
+          <Separator borderColor="rgba(255,255,255,0.05)" />
           <MenuItem
-            icon={<HelpCircle size={20} />}
-            title="Help & Support"
+            icon={<HelpCircle size={20} color="$primary" />}
+            title="Help & Rituals"
             onPress={() => router.push('/support')}
           />
         </YStack>
-      </Card>
+      </GlassCard>
 
       <Button
-        theme="red"
         size="$4"
         onPress={handleLogout}
         disabled={isLoggingOut}
-        icon={isLoggingOut ? <Spinner /> : <LogOut size={20} />}
+        backgroundColor="rgba(255, 45, 85, 0.1)"
+        borderColor="$primary"
+        borderWidth={1}
         mt="auto"
+        mb="$4"
       >
-        {isLoggingOut ? 'Logging out...' : 'Log Out'}
+        <XStack ai="center" gap="$2">
+          {isLoggingOut ? (
+            <Spinner color="white" />
+          ) : (
+            <LogOut size={20} color="white" />
+          )}
+          <Text color="white" fontWeight="600">
+            {isLoggingOut ? 'Fading away...' : 'Log Out'}
+          </Text>
+        </XStack>
       </Button>
     </YStack>
   );
@@ -100,15 +134,17 @@ function MenuItem({ icon, title, onPress }: MenuItemProps) {
     <XStack
       p="$4"
       ai="center"
-      space="$3"
+      gap="$3"
       onPress={onPress}
-      pressStyle={{ bg: '$backgroundHover' }}
+      pressStyle={{ backgroundColor: 'rgba(255,255,255,0.05)' }}
     >
-      <View color="$gray10">{icon}</View>
+      <View>{icon}</View>
       <Text flex={1} color="$color" fontSize="$4">
         {title}
       </Text>
-      <Text color="$gray10">›</Text>
+      <Text color="$gray10" fontSize="$5">
+        ›
+      </Text>
     </XStack>
   );
 }

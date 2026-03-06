@@ -1,6 +1,7 @@
-import { Component, type ReactNode, type ErrorInfo } from 'react';
-import { YStack, Text, Button, Card, H2 } from 'tamagui';
 import { AlertTriangle, RefreshCcw } from '@tamagui/lucide-icons';
+import { Component, type ErrorInfo, type ReactNode } from 'react';
+import { Button, H2, Text, YStack } from 'tamagui';
+import { FloatingElement, GlassCard, Sparkle } from './animations';
 
 interface Props {
   children: ReactNode;
@@ -13,7 +14,7 @@ interface State {
 }
 
 export class ErrorBoundary extends Component<Props, State> {
-  public state: State = {
+  public override state: State = {
     hasError: false,
     error: null,
   };
@@ -22,7 +23,7 @@ export class ErrorBoundary extends Component<Props, State> {
     return { hasError: true, error };
   }
 
-  public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+  public override componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     console.error('Uncaught error:', error, errorInfo);
   }
 
@@ -30,36 +31,41 @@ export class ErrorBoundary extends Component<Props, State> {
     this.setState({ hasError: false, error: null });
   };
 
-  public render() {
+  public override render() {
     if (this.state.hasError) {
       if (this.props.fallback) {
         return this.props.fallback;
       }
 
       return (
-        <YStack f={1} jc="center" ai="center" p="$4" bg="$background">
-          <Card elevate bordered p="$6" maxWidth={400}>
-            <YStack space="$4" ai="center">
-              <AlertTriangle size={64} color="#EF4444" />
-              
-              <H2 textAlign="center" color="$color">
-                Something went wrong
-              </H2>
-              
-              <Text color="$gray10" textAlign="center">
-                {this.state.error?.message || 'An unexpected error occurred'}
-              </Text>
-              
-              <Button
-                theme="purple"
-                size="$4"
-                icon={<RefreshCcw size={18} />}
-                onPress={this.handleRetry}
-              >
-                Try Again
-              </Button>
-            </YStack>
-          </Card>
+        <YStack f={1} jc="center" ai="center" p="$4" bg="transparent">
+          <GlassCard elevation={10} p="$6" maxWidth={400} ai="center" gap="$4">
+            <FloatingElement>
+              <AlertTriangle size={64} color="$primary" />
+            </FloatingElement>
+
+            <H2 textAlign="center" color="$color">
+              The ritual failed
+            </H2>
+
+            <Text color="$gray11" textAlign="center">
+              {this.state.error?.message ||
+                'A glitch in the cosmic flow occurred'}
+            </Text>
+
+            <Button
+              backgroundColor="$primary"
+              size="$4"
+              onPress={this.handleRetry}
+            >
+              <YStack ai="center" gap="$2">
+                <RefreshCcw size={18} color="white" />
+                <Text color="white" fontWeight="600">
+                  Re-invoke
+                </Text>
+              </YStack>
+            </Button>
+          </GlassCard>
         </YStack>
       );
     }
@@ -68,31 +74,39 @@ export class ErrorBoundary extends Component<Props, State> {
   }
 }
 
-export function ErrorCard({ 
-  title = 'Error', 
-  message, 
-  onRetry 
-}: { 
+export function ErrorCard({
+  title = 'Anomaly Detected',
+  message,
+  onRetry,
+}: {
   title?: string;
   message: string;
   onRetry?: () => void;
 }) {
   return (
-    <Card elevate bordered p="$6" bg="rgba(239, 68, 68, 0.05)">
-      <YStack space="$3" ai="center">
-        <AlertTriangle size={48} color="#EF4444" />
+    <GlassCard
+      elevation={5}
+      p="$6"
+      backgroundColor="rgba(255, 45, 85, 0.05)"
+      borderColor="$primary"
+    >
+      <YStack gap="$3" ai="center">
+        <Sparkle size={24} color="$primary" />
+        <AlertTriangle size={48} color="$primary" />
         <H2 textAlign="center" color="$color" fontSize="$6">
           {title}
         </H2>
-        <Text color="$gray10" textAlign="center">
+        <Text color="$gray11" textAlign="center">
           {message}
         </Text>
         {onRetry && (
-          <Button mt="$2" onPress={onRetry}>
-            Retry
+          <Button mt="$2" onPress={onRetry} backgroundColor="$primary">
+            <Text color="white" fontWeight="600">
+              Retry
+            </Text>
           </Button>
         )}
       </YStack>
-    </Card>
+    </GlassCard>
   );
 }

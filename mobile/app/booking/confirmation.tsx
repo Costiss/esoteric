@@ -1,14 +1,6 @@
+import { Calendar, Check, Home } from '@tamagui/lucide-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import {
-  YStack,
-  Text,
-  Button,
-  Card,
-  H1,
-  Paragraph,
-  View,
-} from 'tamagui';
-import { Check, Calendar, Home } from '@tamagui/lucide-icons';
+import { Button, Card, H1, Paragraph, Text, View, YStack } from 'tamagui';
 
 export default function BookingConfirmationScreen() {
   const { booking_id } = useLocalSearchParams<{ booking_id: string }>();
@@ -42,7 +34,8 @@ export default function BookingConfirmationScreen() {
               Booking Requested!
             </H1>
             <Paragraph color="$gray10" textAlign="center">
-              Your appointment has been requested successfully. The provider will confirm it soon.
+              Your appointment has been requested successfully. The provider
+              will confirm it soon.
             </Paragraph>
           </YStack>
 

@@ -1,81 +1,113 @@
-import { createTamagui } from '@tamagui/core';
-import { createTokens } from '@tamagui/core';
+import { createAnimations } from '@tamagui/animations-react-native';
+import { createTamagui, createTokens } from '@tamagui/core';
+import { createInterFont } from '@tamagui/font-inter';
+import { shorthands } from '@tamagui/shorthands';
+
+const animations = createAnimations({
+  bouncy: {
+    type: 'spring',
+    damping: 10,
+    mass: 0.9,
+    stiffness: 100,
+  },
+  lazy: {
+    type: 'spring',
+    damping: 20,
+    stiffness: 60,
+  },
+  quick: {
+    type: 'spring',
+    damping: 20,
+    mass: 1.2,
+    stiffness: 250,
+  },
+});
+
+const headingFont = createInterFont();
+const bodyFont = createInterFont();
 
 const tokens = createTokens({
-  color: {
-    primary: '#8B5CF6',
-    secondary: '#A78BFA',
-    tertiary: '#C4B5FD',
-    accent: '#F59E0B',
-    dark: '#1E1B4B',
-    darker: '#0F0D1A',
-    light: '#F5F3FF',
-    lighter: '#EDE9FE',
-    white: '#FFFFFF',
-    black: '#000000',
-    gray: '#6B7280',
-    grayLight: '#9CA3AF',
-    grayDark: '#374151',
-    success: '#10B981',
-    warning: '#F59E0B',
-    error: '#EF4444',
-    info: '#3B82F6',
-  },
-  radius: {
-    sm: 4,
-    md: 8,
-    lg: 12,
-    xl: 16,
-    full: 9999,
+  size: {
+    '0': 0,
+    '1': 14,
+    '2': 18,
+    '3': 22,
+    '4': 28,
+    '5': 34,
+    '6': 42,
+    '7': 50,
+    '8': 58,
+    '9': 66,
+    '10': 74,
+    true: 44,
   },
   space: {
-    xs: 4,
-    sm: 8,
-    md: 16,
-    lg: 24,
-    xl: 32,
-    xxl: 48,
+    '0': 0,
+    '0.5': 2,
+    '1': 4,
+    '1.5': 6,
+    '2': 8,
+    '2.5': 10,
+    '3': 12,
+    '3.5': 14,
+    '4': 16,
+    '5': 20,
+    '6': 24,
+    '7': 28,
+    '8': 32,
+    '9': 36,
+    '10': 40,
+    true: 16,
   },
-  size: {
-    xs: 12,
-    sm: 14,
-    md: 16,
-    lg: 18,
-    xl: 24,
-    xxl: 32,
-  },
-  font: {
-    body: 'System',
-    heading: 'System',
-  },
-  fontWeight: {
-    normal: '400',
-    medium: '500',
-    semibold: '600',
-    bold: '700',
-  },
-  lineHeight: {
-    tight: 1.2,
-    normal: 1.5,
-    relaxed: 1.75,
-  },
-  letterSpacing: {
-    tight: -0.02,
-    normal: 0,
-    wide: 0.02,
+  radius: {
+    '0': 0,
+    '1': 4,
+    '2': 8,
+    '3': 12,
+    '4': 16,
+    true: 8,
   },
   zIndex: {
-    0: 0,
-    1: 10,
-    2: 20,
-    3: 30,
-    4: 40,
-    5: 50,
+    '0': 0,
+    '1': 10,
+    '2': 20,
+    '3': 30,
+    '4': 40,
+    '5': 50,
+  },
+  color: {
+    primary: '#FF2D55', // Nebula Red
+    secondary: '#00F2FF', // Electric Cyan
+    tertiary: '#39FF14', // Ethereal Green
+    accent: '#8B5CF6', // Keeping a purple accent
+    deepVoid: '#050208',
+    white: '#FFFFFF',
+    black: '#000000',
+    gray1: '#fcfcfc',
+    gray2: '#f8f8f8',
+    gray3: '#f3f3f3',
+    gray4: '#ededed',
+    gray5: '#e8e8e8',
+    gray6: '#e1e1e1',
+    gray7: '#d9d9d9',
+    gray8: '#cecece',
+    gray9: '#bbbbbb',
+    gray10: '#8d8d8d',
+    gray11: '#646464',
+    gray12: '#202020',
   },
 });
 
 const config = createTamagui({
-  tokens,
+  animations,
+  defaultTheme: 'light',
+  shouldAddPrefersColorThemes: false,
+  themeClassNameOnRoot: false,
+  shorthands,
+  fonts: {
+    heading: headingFont,
+    body: bodyFont,
+  },
   themes: {
     light: {
       background: '#FFFFFF',
@@ -85,27 +117,49 @@ const config = createTamagui({
       color: '#1E1B4B',
       colorHover: '#374151',
       colorPress: '#1E1B4B',
-      colorFocus: '#8B5CF6',
+      colorFocus: '#FF2D55',
       borderColor: '#E5E7EB',
-      borderColorHover: '#C4B5FD',
-      borderColorPress: '#8B5CF6',
+      borderColorHover: '#00F2FF',
+      borderColorPress: '#FF2D55',
       shadowColor: '#000000',
     },
     dark: {
-      background: '#0F0D1A',
-      backgroundHover: '#1E1B4B',
-      backgroundPress: '#312E81',
-      backgroundFocus: '#4C1D95',
+      background: '#050208',
+      backgroundHover: '#130B1C',
+      backgroundPress: '#20142C',
+      backgroundFocus: '#2D1D3F',
       color: '#F5F3FF',
       colorHover: '#EDE9FE',
-      colorPress: '#C4B5FD',
-      colorFocus: '#A78BFA',
-      borderColor: '#374151',
-      borderColorHover: '#4C1D95',
-      borderColorPress: '#8B5CF6',
+      colorPress: '#00F2FF',
+      colorFocus: '#FF2D55',
+      borderColor: '#2D1D3F',
+      borderColorHover: '#FF2D55',
+      borderColorPress: '#00F2FF',
       shadowColor: '#000000',
     },
   },
+  tokens,
+  media: {
+    xs: { maxWidth: 660 },
+    sm: { maxWidth: 800 },
+    md: { maxWidth: 1020 },
+    lg: { maxWidth: 1280 },
+    xl: { maxWidth: 1420 },
+    gtXs: { minWidth: 660 + 1 },
+    gtSm: { minWidth: 800 + 1 },
+    gtMd: { minWidth: 1020 + 1 },
+    gtLg: { minWidth: 1280 + 1 },
+    short: { maxHeight: 820 },
+    tall: { minHeight: 820 },
+    hoverNone: { hover: 'none' },
+    pointerCoarse: { pointer: 'coarse' },
+  },
 });
+
+export type AppConfig = typeof config;
+
+declare module 'tamagui' {
+  interface TamaguiCustomConfig extends AppConfig {}
+}
 
 export default config;

@@ -1,30 +1,26 @@
-import { useState } from 'react';
+import { ChevronRight, Moon, Sparkles, Star } from '@tamagui/lucide-icons';
 import { useRouter } from 'expo-router';
-import {
-  YStack,
-  XStack,
-  Button,
-  H1,
-  Paragraph,
-  View,
-} from 'tamagui';
-import { Sparkles, Star, Moon, ChevronRight } from '@tamagui/lucide-icons';
+import { useState } from 'react';
+import { Button, H1, Paragraph, View, XStack, YStack } from 'tamagui';
 
 const onboardingSteps = [
   {
     icon: <Sparkles size={64} color="#8B5CF6" />,
     title: 'Welcome to Esotheric',
-    description: 'Discover a world of spiritual guidance and esoteric services. Connect with talented practitioners for tarot readings, astrology, reiki, and more.',
+    description:
+      'Discover a world of spiritual guidance and esoteric services. Connect with talented practitioners for tarot readings, astrology, reiki, and more.',
   },
   {
     icon: <Star size={64} color="#F59E0B" />,
     title: 'Verified Providers',
-    description: 'All our providers are carefully verified to ensure you receive authentic and high-quality spiritual services.',
+    description:
+      'All our providers are carefully verified to ensure you receive authentic and high-quality spiritual services.',
   },
   {
     icon: <Moon size={64} color="#6366F1" />,
     title: 'Book with Confidence',
-    description: 'Easy booking, secure payments, and the ability to connect with practitioners who resonate with your spiritual journey.',
+    description:
+      'Easy booking, secure payments, and the ability to connect with practitioners who resonate with your spiritual journey.',
   },
 ];
 
@@ -107,7 +103,11 @@ export default function OnboardingScreen() {
         <Button
           size="$5"
           theme="active"
-          iconAfter={currentStep < onboardingSteps.length - 1 ? <ChevronRight size={20} /> : undefined}
+          iconAfter={
+            currentStep < onboardingSteps.length - 1 ? (
+              <ChevronRight size={20} />
+            ) : undefined
+          }
           onPress={handleNext}
         >
           {currentStep < onboardingSteps.length - 1 ? 'Next' : 'Get Started'}

@@ -1,17 +1,17 @@
-import { useState } from 'react';
 import { useRouter } from 'expo-router';
+import { useState } from 'react';
 import {
-  YStack,
-  XStack,
-  Text,
   Button,
-  Input,
-  Label,
-  Spinner,
   Card,
   H2,
+  Input,
+  Label,
   Paragraph,
+  Spinner,
+  Text,
   View,
+  XStack,
+  YStack,
 } from 'tamagui';
 import { useAuth } from '@/contexts/auth-context';
 
@@ -20,7 +20,7 @@ export default function LoginScreen() {
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
-  
+
   const { login } = useAuth();
   const router = useRouter();
 
@@ -36,7 +36,9 @@ export default function LoginScreen() {
     try {
       await login(email, password);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Login failed. Please try again.');
+      setError(
+        err instanceof Error ? err.message : 'Login failed. Please try again.',
+      );
     } finally {
       setIsLoading(false);
     }

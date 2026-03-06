@@ -1,6 +1,6 @@
+import { Briefcase, Calendar, Home, Search, User } from '@tamagui/lucide-icons';
 import { Tabs } from 'expo-router';
 import { useTheme } from 'tamagui';
-import { Home, Search, Calendar, User, Briefcase } from '@tamagui/lucide-icons';
 import { useAuth } from '@/contexts/auth-context';
 
 export default function TabLayout() {
@@ -32,15 +32,14 @@ export default function TabLayout() {
           tabBarIcon: ({ color }) => <Search size={24} color={color} />,
         }}
       />
-      {isProvider && (
-        <Tabs.Screen
-          name="provider-dashboard"
-          options={{
-            title: 'Dashboard',
-            tabBarIcon: ({ color }) => <Briefcase size={24} color={color} />,
-          }}
-        />
-      )}
+      <Tabs.Screen
+        name="provider-dashboard"
+        options={{
+          title: 'Dashboard',
+          href: isProvider ? '/provider-dashboard' : undefined,
+          tabBarIcon: ({ color }) => <Briefcase size={24} color={color} />,
+        }}
+      />
       <Tabs.Screen
         name="bookings"
         options={{

@@ -1,33 +1,33 @@
-import { useState, useEffect, useCallback } from 'react';
+import { Calendar, Clock } from '@tamagui/lucide-icons';
+import { useCallback, useEffect, useState } from 'react';
 import {
-  YStack,
-  XStack,
-  Text,
   Button,
-  Card,
   H2,
-  Spinner,
-  View,
   Separator,
+  Spinner,
+  Text,
+  View,
+  XStack,
+  YStack,
 } from 'tamagui';
+import { FloatingElement, GlassCard, Sparkle } from '@/components/animations';
 import { useAuth } from '@/contexts/auth-context';
 import { apiClient, type Booking } from '@/lib/api-client';
-import { Calendar, Clock } from '@tamagui/lucide-icons';
 
 export default function BookingsScreen() {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
-  
+
   const { user } = useAuth();
 
   const loadBookings = useCallback(async () => {
     if (!user) return;
-    
+
     try {
       setIsLoading(true);
       const response = await apiClient.getCustomerBookings(user.id);
-      setBookings(response.bookings);
+      setBookings(response?.bookings || []);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load bookings');
     } finally {
@@ -42,11 +42,11 @@ export default function BookingsScreen() {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'confirmed':
-        return '$green10';
+        return '$tertiary';
       case 'in_progress':
-        return '$blue10';
+        return '$secondary';
       case 'cancelled':
-        return '$red10';
+        return '$primary';
       case 'completed':
         return '$gray10';
       default:
@@ -73,10 +73,10 @@ export default function BookingsScreen() {
 
   if (isLoading) {
     return (
-      <YStack f={1} jc="center" ai="center" bg="$background">
-        <Spinner size="large" />
+      <YStack f={1} jc="center" ai="center" bg="transparent">
+        <Spinner size="large" color="$secondary" />
         <Text mt="$4" color="$gray10">
-          Loading bookings...
+          Reading the records...
         </Text>
       </YStack>
     );
@@ -84,12 +84,12 @@ export default function BookingsScreen() {
 
   if (error) {
     return (
-      <YStack f={1} jc="center" ai="center" p="$4" bg="$background">
-        <Text color="$red10" textAlign="center">
+      <YStack f={1} jc="center" ai="center" p="$4" bg="transparent">
+        <Text color="$primary" textAlign="center">
           {error}
         </Text>
-        <Button mt="$4" onPress={loadBookings}>
-          Retry
+        <Button mt="$4" onPress={loadBookings} backgroundColor="$primary">
+          <Text color="white">Retry</Text>
         </Button>
       </YStack>
     );
@@ -97,10 +97,18 @@ export default function BookingsScreen() {
 
   if (bookings.length === 0) {
     return (
-      <YStack f={1} jc="center" ai="center" p="$4" bg="$background">
-        <Calendar size={64} color="gray" />
-        <Text mt="$4" fontSize="$6" fontWeight="600" textAlign="center">
-          No bookings yet
+      <YStack f={1} jc="center" ai="center" p="$4" bg="transparent">
+        <FloatingElement>
+          <Calendar size={64} color="$secondary" opacity={0.5} />
+        </FloatingElement>
+        <Text
+          mt="$4"
+          fontSize="$6"
+          fontWeight="600"
+          textAlign="center"
+          color="$color"
+        >
+          No destiny paths yet
         </Text>
         <Text mt="$2" color="$gray10" textAlign="center">
           Explore our services and book your first appointment
@@ -110,13 +118,16 @@ export default function BookingsScreen() {
   }
 
   return (
-    <YStack f={1} p="$4" space="$4" bg="$background">
-      <H2 color="$color">My Bookings</H2>
-      
-      <YStack space="$3">
+    <YStack f={1} p="$4" gap="$4" bg="transparent">
+      <XStack ai="center" gap="$2">
+        <H2 color="$color">My Bookings</H2>
+        <Sparkle size={24} color="$tertiary" />
+      </XStack>
+
+      <YStack gap="$3" pb="$8">
         {bookings.map((booking) => (
-          <Card key={booking.id} elevate bordered p="$4">
-            <YStack space="$3">
+          <GlassCard key={booking.id} elevation={5}>
+            <YStack gap="$3">
               <XStack jc="space-between" ai="center">
                 <Text fontSize="$5" fontWeight="600" color="$color">
                   Service ID: {booking.service_id.slice(0, 8)}...
@@ -126,11 +137,12 @@ export default function BookingsScreen() {
                   px="$2"
                   py="$1"
                   br="$2"
+                  opacity={0.8}
                 >
                   <Text
                     color="white"
                     fontSize="$2"
-                    fontWeight="600"
+                    fontWeight="700"
                     textTransform="capitalize"
                   >
                     {booking.status.replace('_', ' ')}
@@ -138,24 +150,25 @@ export default function BookingsScreen() {
                 </View>
               </XStack>
 
-              <Separator />
+              <Separator borderColor="rgba(255,255,255,0.1)" />
 
-              <YStack space="$2">
-                <XStack space="$2" ai="center">
-                  <Calendar size={16} color="gray" />
+              <YStack gap="$2">
+                <XStack gap="$2" ai="center">
+                  <Calendar size={16} color="$secondary" />
                   <Text color="$gray10">{formatDate(booking.start_ts)}</Text>
                 </XStack>
-                <XStack space="$2" ai="center">
-                  <Clock size={16} color="gray" />
+                <XStack gap="$2" ai="center">
+                  <Clock size={16} color="$secondary" />
                   <Text color="$gray10">
-                    {formatTime(booking.start_ts)} - {formatTime(booking.end_ts)}
+                    {formatTime(booking.start_ts)} -{' '}
+                    {formatTime(booking.end_ts)}
                   </Text>
                 </XStack>
               </YStack>
 
               {booking.client_notes && (
-                <Text color="$gray10" fontSize="$3">
-                  Notes: {booking.client_notes}
+                <Text color="$gray11" fontSize="$3" fontStyle="italic">
+                  " {booking.client_notes} "
                 </Text>
               )}
 
@@ -163,15 +176,17 @@ export default function BookingsScreen() {
                 <Text fontSize="$4" fontWeight="600" color="$primary">
                   R$ {(booking.price_cents / 100).toFixed(2)}
                 </Text>
-                
+
                 {booking.status === 'requested' && (
-                  <Button size="$2" theme="red">
-                    Cancel
+                  <Button size="$2" backgroundColor="$primary">
+                    <Text color="white" fontSize="$2" fontWeight="600">
+                      Cancel
+                    </Text>
                   </Button>
                 )}
               </XStack>
             </YStack>
-          </Card>
+          </GlassCard>
         ))}
       </YStack>
     </YStack>

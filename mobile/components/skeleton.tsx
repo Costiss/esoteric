@@ -1,6 +1,6 @@
-import { YStack, XStack, View } from 'tamagui';
 import { useEffect, useRef } from 'react';
 import { Animated } from 'react-native';
+import { View, XStack, YStack } from 'tamagui';
 
 interface SkeletonProps {
   width?: number | string;
@@ -9,7 +9,12 @@ interface SkeletonProps {
   flex?: number;
 }
 
-export function Skeleton({ width = '100%', height = 20, borderRadius = 4, flex }: SkeletonProps) {
+export function Skeleton({
+  width = '100%',
+  height = 20,
+  borderRadius = 4,
+  flex,
+}: SkeletonProps) {
   const shimmerAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
@@ -25,7 +30,7 @@ export function Skeleton({ width = '100%', height = 20, borderRadius = 4, flex }
           duration: 1500,
           useNativeDriver: true,
         }),
-      ])
+      ]),
     );
     shimmer.start();
 
@@ -60,7 +65,12 @@ export function Skeleton({ width = '100%', height = 20, borderRadius = 4, flex }
 
 export function SkeletonCard() {
   return (
-    <YStack space="$3" p="$4" backgroundColor="rgba(139, 92, 246, 0.05)" borderRadius="$4">
+    <YStack
+      space="$3"
+      p="$4"
+      backgroundColor="rgba(139, 92, 246, 0.05)"
+      borderRadius="$4"
+    >
       <Skeleton width="70%" height={24} />
       <Skeleton width="100%" height={16} />
       <Skeleton width="90%" height={16} />
@@ -75,12 +85,26 @@ export function SkeletonCard() {
 export function SkeletonStats() {
   return (
     <XStack space="$3" flexWrap="wrap">
-      <YStack flex={1} minWidth={140} space="$2" p="$3" backgroundColor="rgba(139, 92, 246, 0.05)" borderRadius="$4">
+      <YStack
+        flex={1}
+        minWidth={140}
+        space="$2"
+        p="$3"
+        backgroundColor="rgba(139, 92, 246, 0.05)"
+        borderRadius="$4"
+      >
         <Skeleton width={40} height={40} borderRadius={20} />
         <Skeleton width="60%" height={16} />
         <Skeleton width="40%" height={32} />
       </YStack>
-      <YStack flex={1} minWidth={140} space="$2" p="$3" backgroundColor="rgba(139, 92, 246, 0.05)" borderRadius="$4">
+      <YStack
+        flex={1}
+        minWidth={140}
+        space="$2"
+        p="$3"
+        backgroundColor="rgba(139, 92, 246, 0.05)"
+        borderRadius="$4"
+      >
         <Skeleton width={40} height={40} borderRadius={20} />
         <Skeleton width="60%" height={16} />
         <Skeleton width="40%" height={32} />

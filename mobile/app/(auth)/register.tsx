@@ -1,17 +1,17 @@
-import { useState } from 'react';
 import { useRouter } from 'expo-router';
+import { useState } from 'react';
 import {
-  YStack,
-  XStack,
-  Text,
   Button,
-  Input,
-  Label,
-  Spinner,
   Card,
   H2,
+  Input,
+  Label,
   Paragraph,
+  Spinner,
+  Text,
   View,
+  XStack,
+  YStack,
 } from 'tamagui';
 import { useAuth } from '@/contexts/auth-context';
 
@@ -22,7 +22,7 @@ export default function RegisterScreen() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
-  
+
   const { register } = useAuth();
   const router = useRouter();
 
@@ -48,7 +48,11 @@ export default function RegisterScreen() {
     try {
       await register(email, password, fullName);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Registration failed. Please try again.');
+      setError(
+        err instanceof Error
+          ? err.message
+          : 'Registration failed. Please try again.',
+      );
     } finally {
       setIsLoading(false);
     }

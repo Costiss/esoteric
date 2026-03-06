@@ -1,24 +1,24 @@
-import { useState, useEffect, useCallback } from 'react';
+import DateTimePicker from '@react-native-community/datetimepicker';
+import { Calendar, Check, ChevronLeft, Clock } from '@tamagui/lucide-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useCallback, useEffect, useState } from 'react';
+import { Platform } from 'react-native';
 import {
-  YStack,
-  XStack,
-  Text,
   Button,
   Card,
   H1,
   H2,
-  Spinner,
-  ScrollView,
   Input,
   Label,
+  ScrollView,
+  Spinner,
+  Text,
   View,
+  XStack,
+  YStack,
 } from 'tamagui';
-import DateTimePicker from '@react-native-community/datetimepicker';
-import { Platform } from 'react-native';
-import { apiClient, type Service } from '@/lib/api-client';
 import { useAuth } from '@/contexts/auth-context';
-import { ChevronLeft, Calendar, Clock, Check } from '@tamagui/lucide-icons';
+import { apiClient, type Service } from '@/lib/api-client';
 
 export default function NewBookingScreen() {
   const { service_id } = useLocalSearchParams<{ service_id: string }>();
@@ -143,7 +143,7 @@ export default function NewBookingScreen() {
             <H2 color="$color" fontSize="$6">
               Select Date & Time
             </H2>
-            
+
             <Button
               onPress={() => setShowDatePicker(true)}
               icon={<Calendar size={20} />}
@@ -200,7 +200,12 @@ export default function NewBookingScreen() {
       </ScrollView>
 
       {/* Submit Button */}
-      <YStack p="$4" bg="$background" borderTopWidth={1} borderTopColor="$borderColor">
+      <YStack
+        p="$4"
+        bg="$background"
+        borderTopWidth={1}
+        borderTopColor="$borderColor"
+      >
         <Button
           size="$5"
           theme="active"

@@ -1,5 +1,5 @@
-import { useEffect, useRef, useMemo } from 'react';
-import { View, StyleSheet, Animated, Dimensions } from 'react-native';
+import { useEffect, useMemo, useRef } from 'react';
+import { Animated, Dimensions, StyleSheet, View } from 'react-native';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
@@ -18,7 +18,10 @@ interface StardustBackgroundProps {
   color?: string;
 }
 
-export function StardustBackground({ starCount = 50, color = '#8B5CF6' }: StardustBackgroundProps) {
+export function StardustBackground({
+  starCount = 100, // More stars
+  color = '#00F2FF', // Electric Cyan as default
+}: StardustBackgroundProps) {
   const stars = useMemo(() => {
     const items: Star[] = [];
     for (let i = 0; i < starCount; i++) {
@@ -26,10 +29,10 @@ export function StardustBackground({ starCount = 50, color = '#8B5CF6' }: Stardu
         id: i,
         x: Math.random() * SCREEN_WIDTH,
         y: Math.random() * SCREEN_HEIGHT,
-        size: Math.random() * 3 + 1,
+        size: Math.random() * 2 + 0.5, // Smaller, more delicate
         opacity: new Animated.Value(0),
-        duration: Math.random() * 3000 + 2000,
-        delay: Math.random() * 2000,
+        duration: Math.random() * 4000 + 3000,
+        delay: Math.random() * 4000,
       });
     }
     return items;
@@ -50,8 +53,8 @@ export function StardustBackground({ starCount = 50, color = '#8B5CF6' }: Stardu
             duration: star.duration / 2,
             useNativeDriver: true,
           }),
-        ])
-      )
+        ]),
+      ),
     );
 
     for (const anim of animations) {
@@ -130,7 +133,7 @@ export function Sparkle({ size = 20, color = '#F59E0B' }: SparkleProps) {
             useNativeDriver: true,
           }),
         ]),
-      ])
+      ]),
     );
 
     animation.start();
@@ -182,10 +185,10 @@ interface FloatingElementProps {
   distance?: number;
 }
 
-export function FloatingElement({ 
-  children, 
-  duration = 3000, 
-  distance = 10 
+export function FloatingElement({
+  children,
+  duration = 3000,
+  distance = 10,
 }: FloatingElementProps) {
   const translateY = useRef(new Animated.Value(0)).current;
 
@@ -202,7 +205,7 @@ export function FloatingElement({
           duration: duration / 2,
           useNativeDriver: true,
         }),
-      ])
+      ]),
     );
 
     animation.start();
@@ -220,5 +223,38 @@ export function FloatingElement({
 const styles = StyleSheet.create({
   star: {
     position: 'absolute',
+  },
+});
+
+import { Card, styled } from 'tamagui';
+
+export const GlassCard = styled(Card, {
+  backgroundColor: 'rgba(255, 255, 255, 0.05)',
+  borderColor: 'rgba(255, 255, 255, 0.1)',
+  borderWidth: 1,
+  borderRadius: '$4',
+  padding: '$4',
+  elevation: 0,
+  shadowColor: 'transparent',
+  // On web, backdrop-filter is supported
+  // On native, we simulate it with low opacity background
+});
+
+export const TarotCard = styled(Card, {
+  width: 160,
+  height: 240,
+  backgroundColor: '#050208',
+  borderColor: '$primary',
+  borderWidth: 2,
+  borderRadius: '$3',
+  overflow: 'hidden',
+  elevation: 5,
+  shadowColor: '$primary',
+  shadowOffset: { width: 0, height: 4 },
+  shadowOpacity: 0.5,
+  shadowRadius: 10,
+  pressStyle: {
+    scale: 1.05,
+    borderColor: '$secondary',
   },
 });
